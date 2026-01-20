@@ -23,19 +23,21 @@ CREATE TABLE out.products (
     last_updated INTEGER
 );
 
--- Extract from URL (Streaming) with strict column definition to avoid Binder Errors
+-- Extract from URL (Streaming) with strict column definition
 INSERT INTO out.products 
 SELECT 
     code, 
     product_name AS name, 
     ingredients_text AS ingredients, 
-    list_to_json(ingredients_from_palm_oil_tags)::VARCHAR AS palm_oil_tags,
-    list_to_json(ingredients_that_may_be_from_palm_oil_tags)::VARCHAR AS palm_oil_may_be_tags,
+    -- Fix: Use to_json() for lists
+    to_json(ingredients_from_palm_oil_tags)::VARCHAR AS palm_oil_tags,
+    to_json(ingredients_that_may_be_from_palm_oil_tags)::VARCHAR AS palm_oil_may_be_tags,
     image_front_small_url AS image_url,
     nutriscore_grade,
     nova_group,
+    -- Fix: Ensure JSON object is string
     json_serialize(nutrient_levels) AS nutrient_levels,
-    list_to_json(additives_tags)::VARCHAR AS additives_tags,
+    to_json(additives_tags)::VARCHAR AS additives_tags,
     epoch(now()) AS last_updated
 FROM read_json_auto(
     'https://static.openfoodfacts.org/data/openfoodfacts-products.jsonl.gz',
@@ -60,7 +62,7 @@ WHERE code IS NOT NULL
   )
 LIMIT 100000;
 
--- Create Indices (Correct Syntax: schema.table, but index name usually local)
-CREATE INDEX idx_products_name ON out.products(name);
+-- Note: Indexes are created by the App on first load (initSchema)
+-- This avoids "SQLite databases only have a single schema" errors in DuckDB.
 
 DETACH out;
