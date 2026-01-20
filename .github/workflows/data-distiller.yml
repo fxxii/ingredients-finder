@@ -1,0 +1,45 @@
+name: fetch-open-food-weekly
+
+on:
+  schedule:
+    - cron: '0 0 * * 0' # Weekly on Sunday
+  workflow_dispatch:
+
+jobs:
+  distill:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install DuckDB
+        uses: width/setup-duckdb@v1.0.0 # or similar action, or install manually
+        with:
+          version: 'latest'
+
+      - name: Fetch Data Stream & Process
+        run: |
+          # Create directory for artifacts
+          mkdir -p public/data
+          
+          # Run DuckDB script
+          # effectively: wget -qO- url | gunzip | duckdb ...
+          # But DuckDB handles http/gz natively.
+          duckdb < utils/distill.sql
+
+      - name: Optimize & Compress
+        run: |
+          # Vacuum is handled in SQL if possible, or here.
+          # Compress for hosting
+          gzip -9 -c products.sqlite > public/data/products.sqlite.gz
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./public/data
+          destination_dir: data
+          keep_files: true # Keep existing app files if deploying to same branch? 
+          # Actually, usually main app is on gh-pages root. Data might need to be in /data.
+          # Better to deploy as a release asset or to a separate branch 'data'?
+          # For simplicity, let's assume we deploy to 'gh-pages' branch under 'data/' folder.
+          commit_message: "Update food database"
