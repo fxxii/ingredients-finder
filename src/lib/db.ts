@@ -105,6 +105,15 @@ export async function getDatabaseStats() {
   }
 }
 
+// Helper to escape SQL string values
+function toSqlVal(val: any): string {
+  if (val === null || val === undefined) return 'NULL';
+  if (typeof val === 'number') return val.toString();
+  // Escape single quotes by doubling them
+  const str = String(val).replace(/'/g, "''");
+  return `'${str}'`;
+}
+
 export async function bulkImport(products: any[], onProgress?: (count: number) => void) {
   const { db, sqlite3 } = await getDB();
   if (!db) throw new Error("DB not init");
@@ -116,40 +125,49 @@ export async function bulkImport(products: any[], onProgress?: (count: number) =
     // Clear existing data (Mega Sync replacement strategy)
     await sqlite3.exec(db, "DELETE FROM products");
 
-    const stmt = await sqlite3.prepare(db, `
-      INSERT INTO products (
-        code, name, ingredients, palm_oil_tags, palm_oil_may_be_tags, 
-        image_url, nutriscore_grade, nova_group, nutrient_levels, 
-        additives_tags, last_updated
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `);
-
+    // Batch Insert (using raw SQL strings to avoid 'prepare' API issues)
+    const BATCH_SIZE = 50;
     let count = 0;
-    for (const p of products) {
-      await sqlite3.bind_collection(stmt, [
-        p.code, 
-        p.name, 
-        p.ingredients, 
-        p.palm_oil_tags, 
-        p.palm_oil_may_be_tags,
-        p.image_url, 
-        p.nutriscore_grade, 
-        p.nova_group, 
-        p.nutrient_levels, 
-        p.additives_tags, 
-        p.last_updated
-      ]);
-      await sqlite3.step(stmt);
-      await sqlite3.reset(stmt);
+    
+    for (let i = 0; i < products.length; i += BATCH_SIZE) {
+      const batch = products.slice(i, i + BATCH_SIZE);
+      if (batch.length === 0) continue;
+
+      const values = batch.map((p: any) => {
+        return `(
+          ${toSqlVal(p.code)}, 
+          ${toSqlVal(p.name)}, 
+          ${toSqlVal(p.ingredients)}, 
+          ${toSqlVal(p.palm_oil_tags)}, 
+          ${toSqlVal(p.palm_oil_may_be_tags)}, 
+          ${toSqlVal(p.image_url)}, 
+          ${toSqlVal(p.nutriscore_grade)}, 
+          ${toSqlVal(p.nova_group)}, 
+          ${toSqlVal(p.nutrient_levels)}, 
+          ${toSqlVal(p.additives_tags)}, 
+          ${toSqlVal(p.last_updated)}
+        )`;
+      }).join(",");
+
+      const sql = `
+        INSERT INTO products (
+          code, name, ingredients, palm_oil_tags, palm_oil_may_be_tags, 
+          image_url, nutriscore_grade, nova_group, nutrient_levels, 
+          additives_tags, last_updated
+        ) VALUES ${values};
+      `;
+
+      await sqlite3.exec(db, sql);
       
-      count++;
+      count += batch.length;
       if (count % 1000 === 0 && onProgress) onProgress(count);
     }
     
-    await sqlite3.finalize(stmt);
     await sqlite3.exec(db, "COMMIT");
     return count;
+    
   } catch (err) {
+    console.error("Bulk Import Failed", err);
     await sqlite3.exec(db, "ROLLBACK");
     throw err;
   }
