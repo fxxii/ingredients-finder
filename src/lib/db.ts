@@ -105,38 +105,52 @@ export async function getDatabaseStats() {
   }
 }
 
-export async function writeDatabaseFile(data: Uint8Array) {
-  const { db: destDb, sqlite3 } = await getDB();
-  if (!destDb) throw new Error("DB not init");
+export async function bulkImport(products: any[], onProgress?: (count: number) => void) {
+  const { db, sqlite3 } = await getDB();
+  if (!db) throw new Error("DB not init");
 
-  // 1. Load data into an in-memory DB
-  const memDb = await sqlite3.open_v2(
-    ':memory:',
-    SQLite.SQLITE_OPEN_READWRITE | SQLite.SQLITE_OPEN_CREATE
-  );
+  // Transaction for speed
+  await sqlite3.exec(db, "BEGIN TRANSACTION");
   
-  // Deserialize the downloaded blob into the memory DB
-  // explicit flags required for some builds, but default works often.
-  // We use SQLITE_DESERIALIZE_RESIZEABLE | SQLITE_DESERIALIZE_FREEONCLOSE
-  const flags = 0; 
-  await sqlite3.deserialize(memDb, 'main', data, data.length, data.length, flags);
+  try {
+    // Clear existing data (Mega Sync replacement strategy)
+    await sqlite3.exec(db, "DELETE FROM products");
 
-  // 2. Backup Memory DB -> Persistent DB (Disk)
-  // This effectively overwrites the persistent DB with the downloaded one
-  // while handling locking correctly.
-  const backup = await sqlite3.backup_init(destDb, 'main', memDb, 'main');
-  if (backup) {
-    await sqlite3.backup_step(backup, -1); // -1 = copy all pages
-    await sqlite3.backup_finish(backup);
-  } else {
-    throw new Error("Failed to init backup");
+    const stmt = await sqlite3.prepare(db, `
+      INSERT INTO products (
+        code, name, ingredients, palm_oil_tags, palm_oil_may_be_tags, 
+        image_url, nutriscore_grade, nova_group, nutrient_levels, 
+        additives_tags, last_updated
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `);
+
+    let count = 0;
+    for (const p of products) {
+      await sqlite3.bind_collection(stmt, [
+        p.code, 
+        p.name, 
+        p.ingredients, 
+        p.palm_oil_tags, 
+        p.palm_oil_may_be_tags,
+        p.image_url, 
+        p.nutriscore_grade, 
+        p.nova_group, 
+        p.nutrient_levels, 
+        p.additives_tags, 
+        p.last_updated
+      ]);
+      await sqlite3.step(stmt);
+      await sqlite3.reset(stmt);
+      
+      count++;
+      if (count % 1000 === 0 && onProgress) onProgress(count);
+    }
+    
+    await sqlite3.finalize(stmt);
+    await sqlite3.exec(db, "COMMIT");
+    return count;
+  } catch (err) {
+    await sqlite3.exec(db, "ROLLBACK");
+    throw err;
   }
-
-  await sqlite3.close(memDb);
-  
-  // 3. Re-init schema just in case (e.g. if we downloaded a file without indexes)
-  // But usually the downloaded file is complete. 
-  // We can optimize by assuming it's good.
-  
-  return true;
 }

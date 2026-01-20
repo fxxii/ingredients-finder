@@ -8,7 +8,7 @@ import { useHistory } from '../hooks/useHistory';
 
 export const HomePage: React.FC = () => {
   const setView = useStore((state) => state.setView);
-  const dbStatus = useStore((state) => state.dbStatus);
+  // dbStatus removed in favor of global Footer
   const activeCode = useStore((state) => state.activeCode);
   const setActiveCode = useStore((state) => state.setActiveCode);
 
@@ -74,13 +74,7 @@ export const HomePage: React.FC = () => {
         </section>
       </main>
 
-      {/* Footer Status */}
-      <footer className="fixed bottom-0 left-0 right-0 bg-white/80 backdrop-blur-md border-t border-slate-200/60 p-4 text-center text-[10px] font-bold text-slate-400 z-20">
-        <div className="inline-flex items-center gap-2 px-3 py-1.5 ">
-           <div className={`w-2 h-2 rounded-full ${dbStatus.includes('Memory') ? 'bg-amber-500' : 'bg-emerald-500'}`}></div>
-           {dbStatus.toUpperCase()}
-        </div>
-      </footer>
+      {/* Footer Status handled by AppLayout */}
     </div>
   );
 };

@@ -1,5 +1,4 @@
-
-import { writeDatabaseFile } from './db';
+import { bulkImport } from './db';
 
 const DATA_PATH = `${import.meta.env.BASE_URL}data`;
 
@@ -44,38 +43,26 @@ export const syncDatabase = async (onProgress?: (msg: string) => void) => {
 
     if (onProgress) onProgress("Downloading database (might take a while)...");
     
-    const response = await fetch(`${DATA_PATH}/products.sqlite.gz`);
+    // Fetch JSON.gz
+    const response = await fetch(`${DATA_PATH}/products.json.gz`);
     if (!response.ok) throw new Error("Download failed");
     if (!response.body) throw new Error("Response body is empty");
 
-    // Use native DecompressionStream (Chrome 80+, Safari 16.4+)
+    // Decompress
     const ds = new DecompressionStream("gzip");
     const stream = response.body.pipeThrough(ds);
-    const reader = stream.getReader();
+    const newResponse = new Response(stream);
+    
+    // Parse JSON
+    if (onProgress) onProgress("Parsing data...");
+    const products = await newResponse.json();
 
-    const chunks: Uint8Array[] = [];
-    let receivedLength = 0;
+    if (onProgress) onProgress(`Importing ${products.length} items...`);
 
-    // Read stream
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
-      chunks.push(value);
-      receivedLength += value.length;
-    }
-
-    if (onProgress) onProgress("Importing data...");
-
-    // Merge chunks
-    const blob = new Uint8Array(receivedLength);
-    let position = 0;
-    for (const chunk of chunks) {
-      blob.set(chunk, position);
-      position += chunk.length;
-    }
-
-    // Write to DB
-    await writeDatabaseFile(blob);
+    // Bulk Import
+    await bulkImport(products, (count) => {
+       if (onProgress) onProgress(`Imported ${count} items...`);
+    });
     
     // Update local version
     localStorage.setItem('db_version', String(remoteTs));

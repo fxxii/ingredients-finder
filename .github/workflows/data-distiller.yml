@@ -30,9 +30,8 @@ jobs:
 
       - name: Optimize & Compress
         run: |
-          # Vacuum is handled in SQL if possible, or here.
-          # Compress for hosting
-          gzip -9 -c products.sqlite > public/data/products.sqlite.gz
+          # Compress JSON output
+          gzip -9 -c products.json > public/data/products.json.gz
           
           # Generate Version File (~50 Bytes)
           echo "{\"last_updated\": $(date +%s%3N)}" > public/data/version.json

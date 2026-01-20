@@ -1,6 +1,6 @@
 
 import React, { useEffect, useState } from 'react';
-import { Wifi, WifiOff, Database, RotateCw, Download } from 'lucide-react';
+import { Wifi, WifiOff, Database, RotateCw } from 'lucide-react';
 import { getDatabaseStats } from '../lib/db';
 import { getRemoteVersion, syncDatabase } from '../lib/sync';
 import toast from 'react-hot-toast';
@@ -88,7 +88,7 @@ export const Footer: React.FC = () => {
 
     return (
         <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 px-4 py-2 flex items-center justify-between text-[10px] sm:text-xs text-slate-500 z-50 pb-[env(safe-area-inset-bottom)]">
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 w-full justify-between">
                  <div className={`flex items-center gap-1.5 ${isOnline ? 'text-emerald-500' : 'text-slate-400'}`}>
                     {isOnline ? <Wifi size={14} /> : <WifiOff size={14} />}
                     <span className="font-semibold hidden sm:inline">{isOnline ? 'Online' : 'Offline'}</span>
@@ -96,30 +96,27 @@ export const Footer: React.FC = () => {
                  
                  <div className="h-3 w-[1px] bg-slate-200"></div>
 
-                 <div className="flex items-center gap-1.5">
-                    <Database size={14} />
-                    <span>{dbDate ? `${dbDate}` : 'No Data'}</span>
-                 </div>
+                 <button 
+                    onClick={handleSync}
+                    disabled={isSyncing}
+                    className={`flex items-center gap-1.5 transition-colors ${
+                        updateAvailable || isSyncing
+                        ? 'text-blue-600 font-bold animate-pulse' 
+                        : 'text-slate-500 hover:text-slate-700'
+                    }`}
+                 >
+                    {isSyncing ? (
+                        <RotateCw size={14} className="animate-spin" />
+                    ) : updateAvailable ? (
+                        <RotateCw size={14} />
+                    ) : (
+                        <Database size={14} />
+                    )}
+                    <span>
+                        {isSyncing ? 'Syncing...' : updateAvailable ? 'Update Available' : dbDate ? `${dbDate}` : 'No Data'}
+                    </span>
+                 </button>
             </div>
-
-            <button 
-                onClick={handleSync}
-                disabled={isSyncing}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full font-bold transition-all ${
-                    updateAvailable 
-                    ? 'bg-blue-600 text-white hover:bg-blue-700 shadow-md shadow-blue-200' 
-                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                }`}
-            >
-                {isSyncing ? (
-                    <RotateCw size={14} className="animate-spin" />
-                ) : updateAvailable ? (
-                    <Download size={14} />
-                ) : (
-                    <RotateCw size={14} />
-                )}
-                {updateAvailable ? 'Update Available' : 'Sync Data'}
-            </button>
         </div>
     );
 };
