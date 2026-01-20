@@ -12,13 +12,22 @@ export function useProduct(code: string | null) {
 
       // 1. Local Lookup
       try {
-        const localData = await searchProductLocal(code);
+        console.log(`[useProduct] Checking local DB for ${code}...`);
+        
+        // Timeout race to prevent hanging
+        const localData = await Promise.race([
+          searchProductLocal(code),
+          new Promise((_, reject) => setTimeout(() => reject(new Error("DB Timeout")), 2000))
+        ]) as any;
+
+        console.log(`[useProduct] Local Result:`, localData ? 'FOUND' : 'MISSING');
+
         if (localData) {
           await addScanToHistory(code, localData);
           return { source: 'local', data: localData };
         }
       } catch (err) {
-        console.error("Local DB read failed", err);
+        console.warn("[useProduct] Local DB skipped:", err);
       }
 
       // 2. API Fallback

@@ -18,6 +18,9 @@ export const Footer: React.FC = () => {
         window.addEventListener('online', handleStatus);
         window.addEventListener('offline', handleStatus);
         
+        // Polling fallback (some browsers don't fire events reliably)
+        const interval = setInterval(handleStatus, 5000);
+
         refreshStats();
         // Check remote immediately
         checkRemote();
@@ -25,6 +28,7 @@ export const Footer: React.FC = () => {
         return () => {
             window.removeEventListener('online', handleStatus);
             window.removeEventListener('offline', handleStatus);
+            clearInterval(interval);
         };
     }, []);
 

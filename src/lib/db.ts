@@ -77,17 +77,24 @@ async function initSchema(db: number, sqlite3: any) {
 }
 
 export async function searchProductLocal(code: string) {
-  const { db, sqlite3 } = await getDB();
-  if (!db) return null;
+  try {
+    const { db, sqlite3 } = await getDB();
+    if (!db) return null;
 
-  const results: any[] = [];
-  await sqlite3.exec(db, `SELECT * FROM products WHERE code = ?`, (row: any, columns: string[]) => {
-    const obj: any = {};
-    columns.forEach((col, i) => { obj[col] = row[i]; });
-    results.push(obj);
-  }, [code]);
+    const results: any[] = [];
+    await sqlite3.exec(db, `SELECT * FROM products WHERE code = ?`, (row: any, columns: string[]) => {
+      const obj: any = {};
+      columns.forEach((col, i) => { obj[col] = row[i]; });
+      results.push(obj);
+    }, [code]);
 
-  return results.length > 0 ? results[0] : null;
+    return results.length > 0 ? results[0] : null;
+
+  } catch (dbErr) {
+    console.warn("Local DB query failed (safe fallback)", dbErr);
+    // Return null so the app doesn't crash, allowing API fallback or 'Not Found' UI
+    return null;
+  }
 }
 
 export async function getDatabaseStats() {
