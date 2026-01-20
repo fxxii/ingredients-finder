@@ -99,7 +99,7 @@ export const Scanner: React.FC = () => {
 
         {/* Scanning Guide Overlay */}
         {!isInitializing && (
-          <div className="absolute inset-0 pointer-events-none flex flex-col items-center justify-center">
+          <div className="absolute inset-0 pointer-events-none flex flex-col items-center justify-center pb-8">
              {/* Broad Scanning Zone - REMOVED ROUNDED CORNERS */}
              <div className="relative w-[90%] h-[75%] border border-white/40 overflow-hidden shadow-[0_0_0_100vmax_rgba(0,0,0,0.5)]">
                 {/* Visual Scanning Effect */}
@@ -119,24 +119,25 @@ export const Scanner: React.FC = () => {
       <div className="flex-1 bg-slate-50 flex flex-col relative overflow-hidden rounded-t-[32px] -mt-8 z-10 shadow-[0_-10px_40px_rgba(0,0,0,0.3)]">
         
         {/* New Header Control Bar */}
-        <div className="flex items-center justify-between px-6 pt-6 pb-2 shrink-0 bg-slate-50">
+        {/* New Header Control Bar */}
+        <div className="flex items-center justify-between px-4 py-2 shrink-0 bg-slate-50">
            <button 
              onClick={() => {
                setActiveCode(null);
                setView('home');
              }}
-             className="w-10 h-10 bg-slate-200 rounded-full flex items-center justify-center text-slate-600 hover:bg-slate-300 active:scale-95 transition-all"
+             className="w-8 h-8 bg-slate-200 rounded-full flex items-center justify-center text-slate-600 hover:bg-slate-300 active:scale-95 transition-all"
            >
-             <X size={20} />
+             <X size={16} />
            </button>
            
-           <div className="w-12 h-1 bg-slate-200 rounded-full" /> {/* Smaller handle hint */}
+           <div className="w-8 h-1 bg-slate-200 rounded-full" /> {/* Smaller handle hint */}
 
            <button 
              onClick={() => setShowSearch(!showSearch)}
-             className={`w-10 h-10 rounded-full flex items-center justify-center transition-all ${showSearch ? 'bg-blue-100 text-blue-600' : 'bg-slate-200 text-slate-600 hover:bg-slate-300'}`}
+             className={`w-8 h-8 rounded-full flex items-center justify-center transition-all ${showSearch ? 'bg-blue-100 text-blue-600' : 'bg-slate-200 text-slate-600 hover:bg-slate-300'}`}
            >
-             <Search size={20} />
+             <Search size={16} />
            </button>
         </div>
 
@@ -208,10 +209,11 @@ export const Scanner: React.FC = () => {
           0%, 100% { top: 10%; opacity: 0.3; }
           50% { top: 90%; opacity: 1; }
         }
-        #reader video {
+        #reader video, #reader canvas {
           width: 100% !important;
           height: 100% !important;
           object-fit: cover !important;
+          object-position: center !important;
         }
         #reader {
           border: none !important;
