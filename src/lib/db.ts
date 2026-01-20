@@ -103,11 +103,15 @@ export async function getDatabaseStats() {
 
   try {
     let lastUpdated = 0;
-    await sqlite3.exec(db, `SELECT MAX(last_updated) as ts FROM products`, (row: any) => {
+    let count = 0;
+    await sqlite3.exec(db, `SELECT MAX(last_updated) as ts, COUNT(*) as c FROM products`, (row: any) => {
       lastUpdated = row[0];
+      count = row[1];
     });
+    console.log(`[DB Stats] Items in DB: ${count}, Last Updated: ${lastUpdated}`);
     return { last_updated: lastUpdated };
   } catch (e) {
+    console.error("Failed to get stats", e);
     return { last_updated: 0 };
   }
 }

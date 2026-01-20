@@ -38,5 +38,4 @@ COPY (
         OR len(ingredients_from_palm_oil_tags) > 0
         OR len(ingredients_that_may_be_from_palm_oil_tags) > 0
       )
-    LIMIT 100000
 ) TO 'products.json' (FORMAT JSON, ARRAY true);
