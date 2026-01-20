@@ -5,6 +5,7 @@ import basicSsl from '@vitejs/plugin-basic-ssl'
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  base: '/ingredients-finder/', // Set base path for GitHub Pages
   plugins: [
     react(),
     basicSsl(),
