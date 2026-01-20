@@ -49,7 +49,7 @@ export const HomePage: React.FC = () => {
 
                <div className="w-full">
                  <p className="text-sm text-slate-400">
-                   Instant palm oil detection for your groceries
+                   Food Ingredients Finder for your groceries
                  </p>
                </div>
             </div>

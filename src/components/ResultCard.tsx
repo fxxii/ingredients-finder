@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronDown, ChevronUp, AlertTriangle, Image as ImageIcon } from 'lucide-react';
+import { ChevronDown, ChevronUp, AlertTriangle, Image as ImageIcon, X } from 'lucide-react';
 
 interface ResultCardProps {
   isLoading?: boolean;
@@ -9,7 +9,7 @@ interface ResultCardProps {
   code?: string | null;
 }
 
-export const ResultCard: React.FC<ResultCardProps> = ({ isLoading, data, code }) => {
+export const ResultCard: React.FC<ResultCardProps> = ({ isLoading, data, code, onReset }) => {
   const [showIngredients, setShowIngredients] = useState(false);
   const [showAdditives, setShowAdditives] = useState(false);
   const [showPalmDetails, setShowPalmDetails] = useState(false);
@@ -140,6 +140,17 @@ export const ResultCard: React.FC<ResultCardProps> = ({ isLoading, data, code })
                  )}
                </div>
             </div>
+            
+            {/* Close Button (if reset handler provided) */}
+            {onReset && (
+              <button 
+                onClick={onReset}
+                className="w-8 h-8 flex items-center justify-center bg-neutral-100 hover:bg-neutral-200 text-neutral-500 hover:text-neutral-700 rounded-full transition-colors shrink-0"
+                aria-label="Close"
+              >
+                <X size={18} />
+              </button>
+            )}
          </div>
          
          {/* Palm Oil Status */}
