@@ -35,8 +35,8 @@ SELECT
     image_front_small_url AS image_url,
     nutriscore_grade,
     nova_group,
-    -- Fix: Ensure JSON object is string
-    json_serialize(nutrient_levels) AS nutrient_levels,
+    -- Fix: Use to_json() instead of json_serialize()
+    to_json(nutrient_levels)::VARCHAR AS nutrient_levels,
     to_json(additives_tags)::VARCHAR AS additives_tags,
     epoch(now()) AS last_updated
 FROM read_json_auto(
