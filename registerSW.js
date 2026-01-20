@@ -1,0 +1,1 @@
+if('serviceWorker' in navigator) {window.addEventListener('load', () => {navigator.serviceWorker.register('/ingredients-finder/sw.js', { scope: '/ingredients-finder/' })})}
