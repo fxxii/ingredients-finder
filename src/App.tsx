@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { AppLayout } from './components/AppLayout';
 import { HomePage } from './pages/HomePage';
 import { Scanner } from './components/Scanner';
