@@ -47,7 +47,12 @@ export const Scanner: React.FC = () => {
 
         await html5QrCode.start(
           { facingMode: "environment" },
-          config,
+          {
+            fps: 30, // Increased FPS for faster scanning
+            qrbox: config.qrbox,
+            aspectRatio: config.aspectRatio,
+            disableFlip: false,
+          },
           (decodedText) => {
             if (!isMounted) return;
 

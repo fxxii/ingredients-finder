@@ -33,6 +33,9 @@ jobs:
           # Vacuum is handled in SQL if possible, or here.
           # Compress for hosting
           gzip -9 -c products.sqlite > public/data/products.sqlite.gz
+          
+          # Generate Version File (~50 Bytes)
+          echo "{\"last_updated\": $(date +%s%3N)}" > public/data/version.json
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3

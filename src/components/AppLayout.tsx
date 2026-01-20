@@ -17,13 +17,17 @@ interface AppLayoutProps {
   children: React.ReactNode;
 }
 
+import { Toaster } from 'react-hot-toast';
+import { Footer } from './Footer';
 import { ToastContainer } from './ui/Toast';
 
 export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
   return (
     <QueryClientProvider client={queryClient}>
-      <div className="min-h-screen bg-neutral-100 text-neutral-900 font-sans antialiased overflow-hidden relative">
+      <div className="min-h-screen bg-neutral-100 text-neutral-900 font-sans antialiased overflow-hidden relative pb-12">
         {children}
+        <Footer />
+        <Toaster position="bottom-center" toastOptions={{ duration: 4000, style: { fontSize: '13px' } }} />
         <ToastContainer />
       </div>
     </QueryClientProvider>

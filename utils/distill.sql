@@ -38,7 +38,7 @@ SELECT
     -- Fix: Use to_json() instead of json_serialize()
     to_json(nutrient_levels)::VARCHAR AS nutrient_levels,
     to_json(additives_tags)::VARCHAR AS additives_tags,
-    epoch(now()) AS last_updated
+    (epoch(now()) * 1000)::BIGINT AS last_updated
 FROM read_json_auto(
     'https://static.openfoodfacts.org/data/openfoodfacts-products.jsonl.gz',
     columns={
