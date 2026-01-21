@@ -53,7 +53,7 @@ export const syncDatabase = async (onProgress?: (msg: string) => void) => {
     const newResponse = new Response(stream);
     
     // Parse JSON
-    if (onProgress) onProgress("Parsing data...");
+    if (onProgress) onProgress("Processing data...");
     const products = await newResponse.json();
 
     if (onProgress) onProgress(`Importing ${products.length} items...`);

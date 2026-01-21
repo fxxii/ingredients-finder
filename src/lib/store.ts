@@ -20,6 +20,9 @@ interface AppState {
   // Active scan state
   activeCode: string | null;
   setActiveCode: (code: string | null) => void;
+
+  isOnline: boolean;
+  setOnlineStatus: (status: boolean) => void;
 }
 
 export const useStore = create<AppState>((set) => ({
@@ -42,4 +45,8 @@ export const useStore = create<AppState>((set) => ({
 
   activeCode: null,
   setActiveCode: (code) => set({ activeCode: code }),
+
+  // Global Network State (Single Source of Truth)
+  isOnline: navigator.onLine,
+  setOnlineStatus: (status) => set({ isOnline: status }),
 }));

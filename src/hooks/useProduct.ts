@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { searchProductLocal } from '../lib/db';
 import { fetchProductFromOFF } from '../lib/api';
 import { addScanToHistory } from '../lib/history';
+import { useStore } from '../lib/store';
 
 export function useProduct(code: string | null) {
 
@@ -31,9 +32,9 @@ export function useProduct(code: string | null) {
       }
 
       // 3. API Fetch
-      // If we are offline, we throw an error so React Query pauses this query
-      // and automatically retries it when we come back online.
-      if (!navigator.onLine) {
+      // If we are offline (according to our robust Global Status), throw offline error.
+      // This respects the ping check from the Footer.
+      if (!navigator.onLine || !useStore.getState().isOnline) {
          throw new Error("Offline: Waiting for connection...");
       }
 
@@ -56,7 +57,14 @@ export function useProduct(code: string | null) {
           await addScanToHistory(code, mapped);
           return { source: 'api', data: mapped };
         }
-      } catch (apiErr) {
+      } catch (apiErr: any) {
+        // Handle explicit network failures (e.g. WiFi on but no Internet, or DNS failure)
+        // "TypeError: Failed to fetch" is the standard browser error for this.
+        if (apiErr.message === 'Failed to fetch' || apiErr.name === 'TypeError') {
+             console.log("[useProduct] Fetch failed (Network), triggering offline pause.");
+             throw new Error("Offline: Waiting for connection...");
+        }
+
         console.warn("[useProduct] API Fetch failed:", apiErr);
         // If it was a network error (failed to fetch), re-throw so RQ pauses/retries
         // If it was a 404/logic error within fetch, we might want to return 'none'
