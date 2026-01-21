@@ -59,16 +59,7 @@ export const ResultCard: React.FC<ResultCardProps> = ({ isLoading, isPaused, err
      );
   }
 
-  if (!data) {
-     return (
-       <div className="bg-red-50 p-4 rounded-xl border border-red-200 text-center">
-         <p className="text-red-800 font-bold text-sm">No Data Returned</p>
-         <p className="text-red-500 text-xs mt-1">Status: OK but empty.</p>
-       </div>
-     );
-  }
-
-  if (data.source === 'none') {
+  if (!data || data.source === 'none') {
     return (
       <motion.div 
         initial={{ opacity: 0, scale: 0.95 }}
