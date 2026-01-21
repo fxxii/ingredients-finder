@@ -82,12 +82,17 @@ export async function searchProductLocal(code: string) {
     if (!db) return null;
 
     const results: any[] = [];
-    await sqlite3.exec(db, `SELECT * FROM products WHERE code = ?`, (row: any, columns: string[]) => {
+    // Manually escape code to ensure query works with exec()
+    const safeCode = String(code).replace(/'/g, "''");
+    
+    console.log(`[DB Search] Querying: SELECT * FROM products WHERE code = '${safeCode}'`);
+    await sqlite3.exec(db, `SELECT * FROM products WHERE code = '${safeCode}' LIMIT 1`, (row: any, columns: string[]) => {
       const obj: any = {};
       columns.forEach((col, i) => { obj[col] = row[i]; });
       results.push(obj);
-    }, [code]);
+    });
 
+    console.log(`[DB Search] Found ${results.length} results.`);
     return results.length > 0 ? results[0] : null;
 
   } catch (dbErr) {
