@@ -184,7 +184,6 @@ export const Scanner: React.FC = () => {
                  data={productDetails} 
                  isLoading={isFetching} 
                  code={activeCode}
-                 hideMissing={true}
                />
             ) : (
               <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm text-center mb-8">
