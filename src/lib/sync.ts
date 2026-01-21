@@ -37,7 +37,6 @@ export const syncDatabase = async (onProgress?: (msg: string) => void) => {
     // Check if we already have this version
     const localTs = localStorage.getItem('db_version');
     if (localTs && Number(localTs) >= remoteTs) {
-      if (onProgress) onProgress("Database is up to date.");
       return false; 
     }
 
@@ -61,13 +60,13 @@ export const syncDatabase = async (onProgress?: (msg: string) => void) => {
 
     // Bulk Import
     await bulkImport(products, (count) => {
-       if (onProgress) onProgress(`Imported ${count} items...`);
+       const pct = Math.round((count / products.length) * 100);
+       if (onProgress) onProgress(`Importing... ${pct}%`);
     });
     
     // Update local version
     localStorage.setItem('db_version', String(remoteTs));
     
-    if (onProgress) onProgress("Success! Database updated.");
     return true;
 
   } catch (err) {

@@ -171,6 +171,7 @@ export async function bulkImport(products: any[], onProgress?: (count: number) =
       await sqlite3.exec(db, sql);
       
       count += batch.length;
+      // Report progress less frequently to avoid UI spam
       if (count % 1000 === 0 && onProgress) onProgress(count);
     }
     
