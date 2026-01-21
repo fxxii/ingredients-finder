@@ -27,18 +27,33 @@ export const Footer: React.FC = () => {
 
              // Active Ping Check
              try {
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 3000);
-                
-                // Use random query param to bypass cache
-                await fetch(`${import.meta.env.BASE_URL}vite.svg?t=${Date.now()}`, { 
-                    method: 'HEAD', 
-                    signal: controller.signal,
-                    cache: 'no-store'
-                });
-                
-                clearTimeout(timeoutId);
-                setOnlineStatus(true);
+                let attempts = 0;
+                while (attempts < 2) {
+                    try {
+                        attempts++;
+                        const controller = new AbortController();
+                        const timeoutId = setTimeout(() => controller.abort(), 3000);
+                        
+                        // Use random query param to bypass cache
+                        await fetch(`${import.meta.env.BASE_URL}vite.svg?t=${Date.now()}`, { 
+                            method: 'HEAD', 
+                            signal: controller.signal,
+                            cache: 'no-store'
+                        });
+                        
+                        clearTimeout(timeoutId);
+                        setOnlineStatus(true);
+                        return; // Success, exit function
+                    } catch (e: any) {
+                        // Only retry on network errors, not aborts
+                        if (attempts < 2 && e.name !== 'AbortError') {
+                            console.log(`[Connection] Ping attempt ${attempts} failed, retrying...`);
+                            await new Promise(r => setTimeout(r, 1000));
+                            continue;
+                        }
+                        throw e;
+                    }
+                }
              } catch (e) {
                  // Ping failed -> We are OFFLINE
                  console.log("[Connection] Ping failed, setting global Offline.");
@@ -159,9 +174,11 @@ export const Footer: React.FC = () => {
                     ) : (
                         <Database size={14} />
                     )}
-                    <span>
-                        {isSyncing ? 'Updating...' : updateAvailable ? 'Update Now' : dbDate ? `${dbDate}` : 'No Data'}
-                    </span>
+                    {!isSyncing && (
+                        <span>
+                            {updateAvailable ? 'Update Now' : dbDate ? `${dbDate}` : 'No Data'}
+                        </span>
+                    )}
                  </button>
             </div>
         </div>

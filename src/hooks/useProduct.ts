@@ -5,9 +5,10 @@ import { addScanToHistory } from '../lib/history';
 import { useStore } from '../lib/store';
 
 export function useProduct(code: string | null) {
+  const isOnline = useStore((state) => state.isOnline);
 
   return useQuery({
-    queryKey: ['product', code],
+    queryKey: ['product', code, { isOnline }],
     queryFn: async () => {
       if (!code) return null;
 
@@ -34,7 +35,7 @@ export function useProduct(code: string | null) {
       // 3. API Fetch
       // If we are offline (according to our robust Global Status), throw offline error.
       // This respects the ping check from the Footer.
-      if (!navigator.onLine || !useStore.getState().isOnline) {
+      if (!navigator.onLine || !isOnline) {
          throw new Error("Offline: Waiting for connection...");
       }
 
@@ -88,7 +89,5 @@ export function useProduct(code: string | null) {
     },
     networkMode: 'offlineFirst', // Allows queryFn to run even if offline (to check local DB)
     staleTime: 1000 * 60 * 60, // Cache results for 1 hour
-    refetchOnReconnect: true,  // Auto-restart when internet returns
-    refetchOnWindowFocus: false // Don't retry just by clicking the window if offline
   });
 }
