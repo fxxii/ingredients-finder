@@ -29,10 +29,12 @@ COPY (
             nutriscore_grade: 'VARCHAR',
             nova_group: 'INTEGER',
             nutrient_levels: 'JSON',
-            additives_tags: 'VARCHAR[]'
+            additives_tags: 'VARCHAR[]',
+            countries_tags: 'VARCHAR[]'
         }
     )
     WHERE code IS NOT NULL 
+      AND list_contains(countries_tags, 'en:united-kingdom')
       AND (
         ingredients_text IS NOT NULL 
         OR len(ingredients_from_palm_oil_tags) > 0
