@@ -12,7 +12,7 @@ export const HomePage: React.FC = () => {
   const activeCode = useStore((state) => state.activeCode);
   const setActiveCode = useStore((state) => state.setActiveCode);
 
-  const { data: productData, isLoading } = useProduct(activeCode);
+  const { data: productData, isLoading, fetchStatus, error } = useProduct(activeCode);
   const { data: history } = useHistory(5);
 
   return (
@@ -22,11 +22,13 @@ export const HomePage: React.FC = () => {
         
         {/* State Logic: Result vs Dashboard */}
         <div className="space-y-8">
-          {productData || isLoading ? (
+          {productData || isLoading || fetchStatus === 'paused' || error ? (
              <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
                <ResultCard 
                  data={productData} 
                  isLoading={isLoading} 
+                 isPaused={fetchStatus === 'paused'}
+                 error={error as Error | null}
                  onReset={() => setActiveCode(null)} 
                  code={activeCode}
                />

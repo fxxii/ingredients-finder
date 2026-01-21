@@ -14,15 +14,51 @@ export const Footer: React.FC = () => {
     const [hasAutoSynced, setHasAutoSynced] = useState(false);
 
     useEffect(() => {
-        const handleStatus = () => setIsOnline(navigator.onLine);
+        const checkConnection = async () => {
+             if (!navigator.onLine) {
+                 setIsOnline(false);
+                 return;
+             }
+
+             // Ping a reliable resource (Google DNS, or our own API endpoint)
+             // Using a no-cors head request to a reliable public IP is a common trick,
+             // but HEAD to our own "version.json" is safer for CORS/domain reasons.
+             try {
+                // We use a small timeout to detect "offline" quickly
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 3000);
+                
+                // Fetching the version file (even if 404, if it connects it calls back)
+                // Use a random query param to bypass cache
+                await fetch(`${import.meta.env.BASE_URL}vite.svg?t=${Date.now()}`, { 
+                    method: 'HEAD', 
+                    signal: controller.signal,
+                    cache: 'no-store'
+                });
+                
+                clearTimeout(timeoutId);
+                setIsOnline(true);
+             } catch (e) {
+                 // Fetch failed (network error or timeout) -> Definitely Offline
+                 setIsOnline(false);
+             }
+        };
+
+        const handleStatus = () => {
+             // Immediate quick check
+             if (!navigator.onLine) setIsOnline(false);
+             else checkConnection();
+        };
+
         window.addEventListener('online', handleStatus);
         window.addEventListener('offline', handleStatus);
         
-        // Polling fallback (some browsers don't fire events reliably)
-        const interval = setInterval(handleStatus, 5000);
+        // Polling fallback
+        const interval = setInterval(checkConnection, 10000); // Check every 10s
 
         refreshStats();
         // Check remote immediately
+        checkConnection();
         checkRemote();
 
         return () => {

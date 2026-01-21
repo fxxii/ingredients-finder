@@ -4,26 +4,30 @@ import { ChevronDown, ChevronUp, AlertTriangle, Image as ImageIcon, X } from 'lu
 
 interface ResultCardProps {
   isLoading?: boolean;
+  isPaused?: boolean;
+  error?: Error | null;
   data?: any; 
   onReset?: () => void;
   code?: string | null;
 }
 
-export const ResultCard: React.FC<ResultCardProps> = ({ isLoading, data, code, onReset }) => {
+export const ResultCard: React.FC<ResultCardProps> = ({ isLoading, isPaused, error, data, code, onReset }) => {
   const [showIngredients, setShowIngredients] = useState(false);
   const [showAdditives, setShowAdditives] = useState(false);
   const [showPalmDetails, setShowPalmDetails] = useState(false);
 
-  if (isLoading) {
+  if (isLoading || isPaused) {
     return (
       <motion.div 
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         className="bg-white rounded-2xl shadow-lg p-6 flex flex-col items-center justify-center min-h-[200px]"
       >
-        <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mb-4" />
+        <div className={`w-8 h-8 border-4 border-t-transparent rounded-full animate-spin mb-4 ${isPaused ? 'border-amber-500' : 'border-blue-600'}`} />
         <div className="text-center">
-          <p className="text-neutral-500 font-medium">Analyzing product...</p>
+          <p className="text-neutral-500 font-medium">
+            {isPaused ? "Waiting for connection..." : "Analyzing product..."}
+          </p>
           {code && (
             <p className="text-[10px] font-mono text-neutral-400 mt-2 uppercase tracking-widest">
               Code: {code}
@@ -32,6 +36,23 @@ export const ResultCard: React.FC<ResultCardProps> = ({ isLoading, data, code, o
         </div>
       </motion.div>
     );    
+  }
+
+  if (error) {
+     return (
+      <motion.div 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="bg-white rounded-2xl shadow-lg p-6 flex flex-col items-center justify-center min-h-[200px] border-l-8 border-amber-500"
+      >
+        <AlertTriangle size={32} className="text-amber-500 mb-3" />
+        <div className="text-center">
+          <p className="text-neutral-800 font-bold">Network Error</p>
+          <p className="text-sm text-neutral-500 mt-1">{error.message}</p>
+          <p className="text-xs text-neutral-400 mt-3">We'll try again automatically.</p>
+        </div>
+      </motion.div>
+     );
   }
 
   if (!data) return null;
