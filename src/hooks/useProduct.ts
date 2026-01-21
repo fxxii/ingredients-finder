@@ -77,11 +77,18 @@ export function useProduct(code: string | null) {
       return { source: 'none', data: null };
     },
     enabled: !!code,
-    retry: () => {
-        // Retry infinite times if it's a network/offline error
-        return true; 
+    retry: (failureCount, error) => {
+        // If we are definitely offline, stop retrying immediately to prevent loops.
+        // React Query will automatically refetch when connection is restored.
+        if (error.message.includes("Offline")) return false;
+        
+        // true = retry infinite times for other errors (like temporarily server blips if we decided so, or just false)
+        // Let's cap it to 3 for standard errors to be safe.
+        return failureCount < 3;
     },
     networkMode: 'offlineFirst', // Allows queryFn to run even if offline (to check local DB)
     staleTime: 1000 * 60 * 60, // Cache results for 1 hour
+    refetchOnReconnect: true,  // Auto-restart when internet returns
+    refetchOnWindowFocus: false // Don't retry just by clicking the window if offline
   });
 }
