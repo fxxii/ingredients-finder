@@ -12,6 +12,10 @@ interface ResultCardProps {
 }
 
 export const ResultCard: React.FC<ResultCardProps> = ({ isLoading, isPaused, error, data, code, onReset }) => {
+  React.useEffect(() => {
+    console.log('[ResultCard] Render:', { isLoading, isPaused, error, data, code });
+  }, [isLoading, isPaused, error, data, code]);
+
   const [showIngredients, setShowIngredients] = useState(false);
   const [showAdditives, setShowAdditives] = useState(false);
   const [showPalmDetails, setShowPalmDetails] = useState(false);
@@ -55,7 +59,14 @@ export const ResultCard: React.FC<ResultCardProps> = ({ isLoading, isPaused, err
      );
   }
 
-  if (!data) return null;
+  if (!data) {
+     return (
+       <div className="bg-red-50 p-4 rounded-xl border border-red-200 text-center">
+         <p className="text-red-800 font-bold text-sm">No Data Returned</p>
+         <p className="text-red-500 text-xs mt-1">Status: OK but empty.</p>
+       </div>
+     );
+  }
 
   if (data.source === 'none') {
     return (
