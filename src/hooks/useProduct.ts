@@ -12,6 +12,7 @@ export function useProduct(code: string | null) {
     queryFn: async () => {
       if (!code) return null;
 
+      /* ISOLATION TEST: Disable DB/API to test Scanner Stability
       // 1. Local Lookup
       try {
         console.log(`[useProduct] Checking local DB for ${code}...`);
@@ -31,7 +32,15 @@ export function useProduct(code: string | null) {
       } catch (err) {
         console.warn("[useProduct] Local DB skipped:", err);
       }
+      */
+      
+      console.log(`[useProduct] ISOLATED MODE: Detected ${code}. Skipping DB/API.`);
+      // Return a fake "Not Found" to keep UI stable without alerting network errors
+      // or return null to simulate "loading" depending on what we want.
+      // Let's return 'none' so we see the Result Card appear (isolating UI render too).
+      return { source: 'none', data: null };
 
+      /*
       // 3. API Fetch
       // If we are offline (according to our robust Global Status), throw offline error.
       // This respects the ping check from the Footer.
@@ -72,6 +81,7 @@ export function useProduct(code: string | null) {
         // But fetchProductFromOFF throws on non-404 network errors.
         throw apiErr; 
       }
+      */
 
       // 4. Not Found (Online but API said 404)
       await addScanToHistory(code, null); // Log failed scan
