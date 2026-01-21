@@ -22,7 +22,7 @@ export function useProduct(code: string | null) {
           new Promise((_, reject) => setTimeout(() => reject(new Error("DB Timeout")), 2000))
         ]) as any;
 
-        console.log(`[useProduct] Local Result:`, localData ? 'FOUND' : 'MISSING');
+        console.log(`[useProduct] Local result for ${code}:`, localData ? 'FOUND' : 'MISSING');
 
         if (localData) {
           await addScanToHistory(code, localData);

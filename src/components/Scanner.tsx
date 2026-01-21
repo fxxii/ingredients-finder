@@ -16,7 +16,7 @@ export const Scanner: React.FC = () => {
   const [showSearch, setShowSearch] = React.useState(false);
   const [manualInput, setManualInput] = React.useState('');
   
-  const scannerRef = useRef<Html5Qrcode | null>(null);
+  const scannerRef = useRef<any>(null);
   const { data: productDetails, isLoading: isFetching } = useProduct(activeCode);
   const { data: history } = useHistory(5);
 
@@ -70,11 +70,21 @@ export const Scanner: React.FC = () => {
                  return;
             }
 
-            // 2. Check for duplicates (only update if different)
+            // 2. Check for duplicates
             const currentActive = useStore.getState().activeCode;
-            if (cleaned === currentActive) return;
+            
+            // Log at least once every second if seeing the same code, to show it's alive
+            const now = Date.now();
+            if (cleaned === currentActive) {
+                if (!scannerRef.current.lastLog || now - scannerRef.current.lastLog > 2000) {
+                     console.log("[Scanner] Still tracking:", cleaned);
+                     scannerRef.current.lastLog = now;
+                }
+                return;
+            }
 
-            console.log("[Scanner] Valid Code Detected:", cleaned);
+            console.log("[Scanner] New Code Detected:", cleaned);
+            scannerRef.current.lastLog = now;
             setActiveCode(cleaned);
           },
           (errorMessage) => {
