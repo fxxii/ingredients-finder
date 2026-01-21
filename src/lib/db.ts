@@ -161,7 +161,7 @@ export async function bulkImport(products: any[], onProgress?: (count: number) =
       }).join(",");
 
       const sql = `
-        INSERT INTO products (
+        INSERT OR REPLACE INTO products (
           code, name, ingredients, palm_oil_tags, palm_oil_may_be_tags, 
           image_url, nutriscore_grade, nova_group, nutrient_levels, 
           additives_tags, last_updated
