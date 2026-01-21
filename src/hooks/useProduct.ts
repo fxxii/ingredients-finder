@@ -62,8 +62,8 @@ export function useProduct(code: string | null) {
         // Handle explicit network failures (e.g. WiFi on but no Internet, or DNS failure)
         // "TypeError: Failed to fetch" is the standard browser error for this.
         if (apiErr.message === 'Failed to fetch' || apiErr.name === 'TypeError') {
-             console.log("[useProduct] Fetch failed (Network), triggering offline pause.");
-             throw new Error("Offline: Waiting for connection...");
+             console.log("[useProduct] Fetch failed (Network), retrying...");
+             throw new Error("Network request failed");
         }
 
         console.warn("[useProduct] API Fetch failed:", apiErr);

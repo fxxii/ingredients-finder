@@ -9,9 +9,10 @@ interface ResultCardProps {
   data?: any; 
   onReset?: () => void;
   code?: string | null;
+  hideMissing?: boolean;
 }
 
-export const ResultCard: React.FC<ResultCardProps> = ({ isLoading, isPaused, error, data, code, onReset }) => {
+export const ResultCard: React.FC<ResultCardProps> = ({ isLoading, isPaused, error, data, code, onReset, hideMissing }) => {
   const [showIngredients, setShowIngredients] = useState(false);
   const [showAdditives, setShowAdditives] = useState(false);
   const [showPalmDetails, setShowPalmDetails] = useState(false);
@@ -58,6 +59,7 @@ export const ResultCard: React.FC<ResultCardProps> = ({ isLoading, isPaused, err
   if (!data) return null;
 
   if (data.source === 'none') {
+    if (hideMissing) return null;
     return (
       <motion.div 
         initial={{ opacity: 0, scale: 0.95 }}
