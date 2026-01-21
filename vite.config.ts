@@ -11,7 +11,7 @@ export default defineConfig({
     basicSsl(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg'],
+      includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg', 'wa-sqlite-async.wasm'],
       manifest: {
         name: 'FoodScan: Ingredients Finder',
         short_name: 'FoodScan',

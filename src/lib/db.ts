@@ -93,10 +93,47 @@ export async function searchProductLocal(code: string) {
 
     return results.length > 0 ? results[0] : null;
 
-  } catch (dbErr) {
+  } catch (dbErr: any) {
+    const errString = String(dbErr);
     console.warn("Local DB query failed (safe fallback)", dbErr);
+    
+    // Check for specific corruption errors
+    if (errString.includes("malformed") || errString.includes("corrupt") || errString.includes("memory access out of bounds")) {
+       handleCorruption();
+    }
+    
     // Return null so the app doesn't crash, allowing API fallback or 'Not Found' UI
     return null;
+  }
+}
+
+async function handleCorruption() {
+  console.error("CRITICAL: Database corruption detected! Resetting...");
+  try {
+     // Attempt to close logic if possible, though WASM state is likely dead
+     if (sqlite3 && db) {
+        try { await sqlite3.close(db); } catch (e) {}
+     }
+  } catch (e) {}
+
+  // Force delete the IndexedDB database
+  try {
+    const req = indexedDB.deleteDatabase(DB_NAME);
+    req.onsuccess = () => {
+      console.log("Corrupt DB deleted. Reloading...");
+      window.location.reload();
+    };
+    req.onerror = () => {
+      console.error("Failed to delete corrupt DB, reloading anyway...");
+      window.location.reload();
+    };
+    req.onblocked = () => {
+       console.warn("DB Delete blocked, forcing reload");
+       window.location.reload();
+    };
+  } catch (e) {
+    console.error("Error during DB reset", e);
+    window.location.reload();
   }
 }
 
