@@ -46,10 +46,17 @@ export const Scanner: React.FC = () => {
         };
 
         await html5QrCode.start(
-          { facingMode: "environment" },
+          { 
+             facingMode: "environment",
+             // Explicitly request lower resolution to prevent iOS memory crashes
+             width: { min: 640, ideal: 640, max: 1280 },
+             height: { min: 480, ideal: 480, max: 720 } 
+          },
           {
-            fps: 15, // Reduced from 30 to 15 to save battery/CPU on mobile
-            qrbox: config.qrbox,
+            fps: 10, // Dropped to 10 for maximum stability per reviewer suggestion
+            // Use specific pixel values for qrbox to match low-res stream better
+            // 250px is large enough for barcodes in a 480p stream
+            qrbox: { width: 250, height: 250 },
             aspectRatio: config.aspectRatio,
             disableFlip: false,
           },
