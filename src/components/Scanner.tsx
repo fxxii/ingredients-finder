@@ -48,7 +48,7 @@ export const Scanner: React.FC = () => {
         await html5QrCode.start(
           { facingMode: "environment" },
           {
-            fps: 30, // Increased FPS for faster scanning
+            fps: 15, // Reduced from 30 to 15 to save battery/CPU on mobile
             qrbox: config.qrbox,
             aspectRatio: config.aspectRatio,
             disableFlip: false,
@@ -56,11 +56,10 @@ export const Scanner: React.FC = () => {
           (decodedText) => {
             if (!isMounted) return;
 
-            // 1. VALIDATION: Filter out noise (shorter than 8 chars or non-numeric)
-            // Scanner sometimes returns garbage like "4 *Oy"
+             // 1. VALIDATION: Filter out noise (shorter than 8 chars or non-numeric)
             const cleaned = decodedText.trim();
             if (cleaned.length < 8 || !/^\d+$/.test(cleaned)) {
-                 console.warn("[Scanner] Ignored garbage:", cleaned);
+                 // console.warn("[Scanner] Ignored garbage:", cleaned);
                  return;
             }
 
@@ -72,8 +71,7 @@ export const Scanner: React.FC = () => {
             setActiveCode(cleaned);
           },
           (errorMessage) => {
-             // Verify if this error is critical or just "no code"
-             // Html5Qrcode spamming errors is common, ignore them
+             // Ignore errors
           } 
         );
         
@@ -99,6 +97,30 @@ export const Scanner: React.FC = () => {
       }
     };
   }, [setView, setActiveCode]);
+
+  // Performance Optimization: Pause scanner ONLY while processing/fetching
+  // This satisfies "stops processing new frames until product result is return"
+  // allowing continuous scanning once the result is shown.
+  useEffect(() => {
+    if (!scannerRef.current) return;
+    
+    const scanner = scannerRef.current;
+
+    try {
+        if (isFetching) {
+             // If fetching data, pause specificially to save resources during the heavy lift
+             console.log("[Scanner] Pausing for fetch...");
+             scanner.pause(true); 
+        } else {
+            // Once result is returned (or if idle), ensure we are scanning
+            // This 'resume' call might fail if already running, so we swallow errors
+            scanner.resume(); 
+        }
+    } catch (e: any) {
+        // Html5Qrcode throws if you resume while running or pause while paused.
+        // limit noise
+    }
+  }, [isFetching]);
 
   return (
     <div className="fixed inset-0 bg-slate-950 z-40 flex flex-col font-sans overflow-hidden text-slate-900">
