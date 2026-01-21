@@ -20,6 +20,7 @@ interface AppLayoutProps {
 import { Toaster } from 'react-hot-toast';
 import { Footer } from './Footer';
 import { ToastContainer } from './ui/Toast';
+import { DebugConsole } from './DebugConsole';
 
 export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
   return (
@@ -29,6 +30,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
         <Footer />
         <Toaster position="bottom-center" toastOptions={{ duration: 4000, style: { fontSize: '13px' } }} />
         <ToastContainer />
+        <DebugConsole />
       </div>
     </QueryClientProvider>
   );
