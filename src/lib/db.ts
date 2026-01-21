@@ -108,32 +108,33 @@ export async function searchProductLocal(code: string) {
 }
 
 async function handleCorruption() {
-  console.error("CRITICAL: Database corruption detected! Resetting...");
+  console.error("CRITICAL: Database corruption detected! Resetting DB state...");
   try {
-     // Attempt to close logic if possible, though WASM state is likely dead
+     // Attempt to close logic if possible
      if (sqlite3 && db) {
         try { await sqlite3.close(db); } catch (e) {}
      }
   } catch (e) {}
 
+  // Reset Singleton State so next getDB() tries again
+  sqlite3 = null;
+  db = null;
+  initPromise = null;
+
   // Force delete the IndexedDB database
   try {
     const req = indexedDB.deleteDatabase(DB_NAME);
     req.onsuccess = () => {
-      console.log("Corrupt DB deleted. Reloading...");
-      window.location.reload();
+      console.log("Corrupt DB deleted. Next attempt will create fresh DB.");
     };
     req.onerror = () => {
-      console.error("Failed to delete corrupt DB, reloading anyway...");
-      window.location.reload();
+      console.warn("Failed to delete corrupt DB, but state reset.");
     };
     req.onblocked = () => {
-       console.warn("DB Delete blocked, forcing reload");
-       window.location.reload();
+       console.warn("DB Delete blocked (tab open?), but state reset.");
     };
   } catch (e) {
     console.error("Error during DB reset", e);
-    window.location.reload();
   }
 }
 
