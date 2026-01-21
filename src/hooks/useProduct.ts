@@ -30,29 +30,34 @@ export function useProduct(code: string | null) {
         console.warn("[useProduct] Local DB skipped:", err);
       }
 
-      // 2. API Fallback
+      // 3. API Fallback
       if (navigator.onLine) {
-        const remoteData = await fetchProductFromOFF(code);
-        
-        if (remoteData && remoteData.product) {
-          const mapped = {
-             code,
-             name: remoteData.product.product_name,
-             ingredients: remoteData.product.ingredients_text,
-             palm_oil_tags: JSON.stringify(remoteData.product.ingredients_from_palm_oil_tags || []),
-             palm_oil_may_be_tags: JSON.stringify(remoteData.product.ingredients_that_may_be_from_palm_oil_tags || []),
-             image_url: remoteData.product.image_front_small_url,
-             nutriscore_grade: remoteData.product.nutriscore_grade,
-             nova_group: remoteData.product.nova_group,
-             nutrient_levels: JSON.stringify(remoteData.product.nutrient_levels || {}),
-             additives_tags: JSON.stringify(remoteData.product.additives_tags || [])
-          };
-          await addScanToHistory(code, mapped);
-          return { source: 'api', data: mapped };
+        try {
+          const remoteData = await fetchProductFromOFF(code);
+          
+          if (remoteData && remoteData.product) {
+            const mapped = {
+               code,
+               name: remoteData.product.product_name,
+               ingredients: remoteData.product.ingredients_text,
+               palm_oil_tags: JSON.stringify(remoteData.product.ingredients_from_palm_oil_tags || []),
+               palm_oil_may_be_tags: JSON.stringify(remoteData.product.ingredients_that_may_be_from_palm_oil_tags || []),
+               image_url: remoteData.product.image_front_small_url,
+               nutriscore_grade: remoteData.product.nutriscore_grade,
+               nova_group: remoteData.product.nova_group,
+               nutrient_levels: JSON.stringify(remoteData.product.nutrient_levels || {}),
+               additives_tags: JSON.stringify(remoteData.product.additives_tags || [])
+            };
+            await addScanToHistory(code, mapped);
+            return { source: 'api', data: mapped };
+          }
+        } catch (apiErr) {
+          console.warn("[useProduct] API Fetch failed (offline or error):", apiErr);
+          // Fallthrough to 'none' instead of throwing
         }
       }
 
-      // 3. Not Found
+      // 4. Not Found
       await addScanToHistory(code, null); // Log failed scan
       return { source: 'none', data: null };
     },
