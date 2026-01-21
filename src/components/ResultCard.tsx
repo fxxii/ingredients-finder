@@ -64,12 +64,27 @@ export const ResultCard: React.FC<ResultCardProps> = ({ isLoading, isPaused, err
       <motion.div 
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="bg-neutral-50 rounded-2xl p-6 border-2 border-dashed border-neutral-200 text-center"
+        className="bg-neutral-50 rounded-2xl p-6 border-2 border-dashed border-neutral-200 text-center relative"
       >
+        {onReset && (
+          <button 
+            onClick={onReset}
+            className="absolute top-2 right-2 w-8 h-8 flex items-center justify-center text-neutral-400 hover:text-neutral-600 hover:bg-neutral-100 rounded-full transition-colors"
+          >
+            <X size={16} />
+          </button>
+        )}
+        
         <p className="text-neutral-600 font-medium mb-2">Product Not Found</p>
-        <p className="text-sm text-neutral-400">
+        <p className="text-sm text-neutral-400 mb-4">
           This barcode is not yet in our databases.
         </p>
+        
+        {code && (
+          <div className="inline-block px-3 py-1 bg-white border border-neutral-200 rounded text-xs font-mono text-neutral-500 tracking-wider shadow-sm">
+            {code}
+          </div>
+        )}
       </motion.div>
     );
   }

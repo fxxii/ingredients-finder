@@ -98,7 +98,7 @@ export async function searchProductLocal(code: string) {
     console.warn("Local DB query failed (safe fallback)", dbErr);
     
     // Check for specific corruption errors
-    if (errString.includes("malformed") || errString.includes("corrupt") || errString.includes("memory access out of bounds")) {
+    if (errString.includes("malformed") || errString.includes("corrupt") || errString.includes("memory access out of bounds") || errString.includes("database is locked")) {
        handleCorruption();
     }
     

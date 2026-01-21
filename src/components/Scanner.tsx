@@ -40,9 +40,9 @@ export const Scanner: React.FC = () => {
             Html5QrcodeSupportedFormats.UPC_A,
             Html5QrcodeSupportedFormats.UPC_E,
           ],
-          experimental: {
-            useBarCodeDetectorIfSupported: true
-          }
+          // experimental: {
+          //   useBarCodeDetectorIfSupported: true
+          // }
         };
 
         await html5QrCode.start(
@@ -56,13 +56,25 @@ export const Scanner: React.FC = () => {
           (decodedText) => {
             if (!isMounted) return;
 
-            // PREVENT REDUNDANT SCANS: Only proceed if code is different or null
-            const currentActive = useStore.getState().activeCode;
-            if (decodedText === currentActive) return;
+            // 1. VALIDATION: Filter out noise (shorter than 8 chars or non-numeric)
+            // Scanner sometimes returns garbage like "4 *Oy"
+            const cleaned = decodedText.trim();
+            if (cleaned.length < 8 || !/^\d+$/.test(cleaned)) {
+                 console.warn("[Scanner] Ignored garbage:", cleaned);
+                 return;
+            }
 
-            setActiveCode(decodedText);
+            // 2. Check for duplicates (only update if different)
+            const currentActive = useStore.getState().activeCode;
+            if (cleaned === currentActive) return;
+
+            console.log("[Scanner] Valid Code Detected:", cleaned);
+            setActiveCode(cleaned);
           },
-          () => {} 
+          (errorMessage) => {
+             // Verify if this error is critical or just "no code"
+             // Html5Qrcode spamming errors is common, ignore them
+          } 
         );
         
         if (isMounted) setIsInitializing(false);
