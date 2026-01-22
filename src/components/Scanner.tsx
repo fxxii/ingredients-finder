@@ -155,7 +155,7 @@ export const Scanner: React.FC = () => {
         {!isInitializing && (
           <div className="absolute inset-0 pointer-events-none flex flex-col items-center justify-center pb-8">
              {/* Broad Scanning Zone - REMOVED ROUNDED CORNERS */}
-             <div className="relative w-64 h-64 border border-white/40 overflow-hidden shadow-[0_0_0_100vmax_rgba(0,0,0,0.5)]">
+             <div className="relative w-[80%] h-[70%] border border-white/40 overflow-hidden shadow-[0_0_0_100vmax_rgba(0,0,0,0.5)]">
                 {/* Visual Scanning Effect */}
                 <div className="absolute top-0 left-0 right-0 h-[2px] bg-blue-400/80 shadow-[0_0_15px_rgba(56,189,248,0.8)] animate-[scan_3s_ease-in-out_infinite]"></div>
                 
