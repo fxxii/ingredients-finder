@@ -1,4 +1,4 @@
-//import { bulkImport } from './db';
+import { bulkImport } from './db';
 
 const DATA_PATH = `${import.meta.env.BASE_URL}data`;
 
@@ -58,13 +58,12 @@ export const syncDatabase = async (onProgress?: (msg: string) => void) => {
 
     if (onProgress) onProgress(`Importing ${products.length} items...`);
 
-    /* ISOLATION MODE: Commenting out bulk import to verify if large JSON/DB write causes crash 
     // Bulk Import
     await bulkImport(products, (count) => {
        const pct = Math.round((count / products.length) * 100);
        if (onProgress) onProgress(`Importing... ${pct}%`);
     });
-    */
+    
     console.log("[Sync] ISOLATED: Skipping bulkImport to DB.");
     
     // Update local version
