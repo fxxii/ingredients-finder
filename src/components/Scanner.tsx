@@ -88,6 +88,7 @@ export const Scanner: React.FC = () => {
             setActiveCode(cleaned);
           },
           (errorMessage) => {
+            console.error("Scanner error", errorMessage);
              // Ignore errors
           } 
         );

@@ -1,4 +1,4 @@
-import { bulkImport } from './db';
+//import { bulkImport } from './db';
 
 const DATA_PATH = `${import.meta.env.BASE_URL}data`;
 

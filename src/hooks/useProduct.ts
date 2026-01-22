@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
-import { searchProductLocal } from '../lib/db';
-import { fetchProductFromOFF } from '../lib/api';
-import { addScanToHistory } from '../lib/history';
+//import { searchProductLocal } from '../lib/db';
+//import { fetchProductFromOFF } from '../lib/api';
+//import { addScanToHistory } from '../lib/history';
 import { useStore } from '../lib/store';
 
 export function useProduct(code: string | null) {
@@ -84,8 +84,8 @@ export function useProduct(code: string | null) {
       */
 
       // 4. Not Found (Online but API said 404)
-      await addScanToHistory(code, null); // Log failed scan
-      return { source: 'none', data: null };
+//      await addScanToHistory(code, null); // Log failed scan
+//      return { source: 'none', data: null };
     },
     enabled: !!code,
     retry: (failureCount, error) => {
