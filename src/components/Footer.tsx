@@ -2,7 +2,8 @@
 import React, { useEffect, useState } from 'react';
 import { Wifi, WifiOff, Database, RotateCw } from 'lucide-react';
 import { getDatabaseStats } from '../lib/db';
-import { getRemoteVersion, syncDatabase } from '../lib/sync';
+//import { getRemoteVersion, syncDatabase } from '../lib/sync';
+import { syncDatabase } from '../lib/sync';
 import toast from 'react-hot-toast';
 
 import { useStore } from '../lib/store';
@@ -125,7 +126,7 @@ export const Footer: React.FC = () => {
         }
     }
     */
-   
+
     const handleSync = async () => {
         console.log(`ISOLATION MODE: Commenting out bulk import to verify if large JSON/DB write causes crash handleSync`);
         if (!isOnline) {
