@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
-//import { searchProductLocal } from '../lib/db';
+import { searchProductLocal } from '../lib/db';
 //import { fetchProductFromOFF } from '../lib/api';
-//import { addScanToHistory } from '../lib/history';
+import { addScanToHistory } from '../lib/history';
 import { useStore } from '../lib/store';
 
 export function useProduct(code: string | null) {
@@ -12,7 +12,7 @@ export function useProduct(code: string | null) {
     queryFn: async () => {
       if (!code) return null;
 
-      /* ISOLATION TEST: Disable DB/API to test Scanner Stability
+      // ISOLATION TEST: Re-enabling Local DB to test if READ operation causes crash
       // 1. Local Lookup
       try {
         console.log(`[useProduct] Checking local DB for ${code}...`);
@@ -32,9 +32,8 @@ export function useProduct(code: string | null) {
       } catch (err) {
         console.warn("[useProduct] Local DB skipped:", err);
       }
-      */
       
-      console.log(`[useProduct] ISOLATED MODE: Detected ${code}. Skipping DB/API.`);
+      console.log(`[useProduct] ISOLATED MODE: Detected ${code}. Local DB missed. Skipping API.`);
       // Return a fake "Not Found" to keep UI stable without alerting network errors
       // or return null to simulate "loading" depending on what we want.
       // Let's return 'none' so we see the Result Card appear (isolating UI render too).
