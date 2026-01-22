@@ -46,12 +46,7 @@ export const Scanner: React.FC = () => {
         };
 
         await html5QrCode.start(
-          { 
-             facingMode: "environment",
-             // Explicitly request lower resolution to prevent iOS memory crashes
-             width: { min: 640, ideal: 640, max: 1280 },
-             height: { min: 480, ideal: 480, max: 720 } 
-          },
+          { facingMode: "environment" },
           {
             fps: 5, // Dropped to 5 (Max Stability). 10 was okay, 5 is practically bulletproof for crashing.
             // Use specific pixel values for qrbox to match low-res stream better
@@ -59,6 +54,8 @@ export const Scanner: React.FC = () => {
             qrbox: { width: 200, height: 200 },
             aspectRatio: config.aspectRatio,
             disableFlip: false,
+            // Video constraints can sometimes be passed here in 'videoConstraints' or directly in the first arg
+            // but for maximum compatibility we will rely on default resolution if the manual constraints fail.
           },
           (decodedText) => {
             if (!isMounted) return;
