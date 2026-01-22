@@ -84,9 +84,8 @@ export const Scanner: React.FC = () => {
             scannerRef.current.lastLog = now;
             setActiveCode(cleaned);
           },
-          (errorMessage) => {
-            console.error("Scanner error", errorMessage);
-             // Ignore errors
+          (_) => {
+            // Ignore errors (no code found in frame)
           } 
         );
         
