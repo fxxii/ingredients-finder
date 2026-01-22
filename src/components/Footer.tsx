@@ -113,6 +113,7 @@ export const Footer: React.FC = () => {
         }
     };
 
+    /* ISOLATION MODE: Commenting out bulk import to verify if large JSON/DB write causes crash 
     const checkRemote = async () => {
         console.log(`ISOLATION MODE: Commenting out bulk import to verify if large JSON/DB write causes crash checkRemote`);
         if (!navigator.onLine) return;
@@ -123,7 +124,8 @@ export const Footer: React.FC = () => {
             setUpdateAvailable(true);
         }
     }
-
+    */
+   
     const handleSync = async () => {
         console.log(`ISOLATION MODE: Commenting out bulk import to verify if large JSON/DB write causes crash handleSync`);
         if (!isOnline) {
