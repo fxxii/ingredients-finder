@@ -80,7 +80,7 @@ export const Footer: React.FC = () => {
         refreshStats();
         // Check remote immediately
         checkConnection();
-        checkRemote();
+        // checkRemote();
 
         return () => {
             window.removeEventListener('online', handleStatus);
