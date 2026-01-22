@@ -85,7 +85,7 @@ export const Footer: React.FC = () => {
         return () => {
             window.removeEventListener('online', handleStatus);
             window.removeEventListener('offline', handleStatus);
-            clearInterval(interval);
+            //clearInterval(interval);
         };
     }, []);
 
