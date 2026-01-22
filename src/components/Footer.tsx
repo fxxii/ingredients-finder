@@ -35,14 +35,14 @@ export const Footer: React.FC = () => {
                         const timeoutId = setTimeout(() => controller.abort(), 3000);
                         console.log(`ISOLATION MODE: Commenting out bulk import to verify if large JSON/DB write causes crash checkConnection`);
                         // Use random query param to bypass cache
-                        await fetch(`${import.meta.env.BASE_URL}vite.svg?t=${Date.now()}`, { 
+                        /*await fetch(`${import.meta.env.BASE_URL}vite.svg?t=${Date.now()}`, { 
                             method: 'HEAD', 
                             signal: controller.signal,
                             cache: 'no-store'
                         });
                         
                         clearTimeout(timeoutId);
-                        setOnlineStatus(true);
+                        setOnlineStatus(true);*/
                         return; // Success, exit function
                     } catch (e: any) {
                         // Only retry on network errors, not aborts
