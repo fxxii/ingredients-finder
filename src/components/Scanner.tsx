@@ -49,9 +49,9 @@ export const Scanner: React.FC = () => {
           { facingMode: "environment" },
           {
             fps: 5, // Dropped to 5 (Max Stability). 10 was okay, 5 is practically bulletproof for crashing.
-            // Use specific pixel values for qrbox to match low-res stream better
-            // 250px is large enough for barcodes in a 480p stream
-            qrbox: { width: 200, height: 200 },
+            qrbox: (viewfinderWidth: number, viewfinderHeight: number) => {
+               return { width: viewfinderWidth * 0.8, height: viewfinderHeight * 0.7 };
+            },
             aspectRatio: config.aspectRatio,
             disableFlip: false,
             // Video constraints can sometimes be passed here in 'videoConstraints' or directly in the first arg
