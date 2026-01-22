@@ -31,11 +31,12 @@ export const Footer: React.FC = () => {
                 while (attempts < 2) {
                     try {
                         attempts++;
-                        const controller = new AbortController();
-                        const timeoutId = setTimeout(() => controller.abort(), 3000);
                         console.log(`ISOLATION MODE: Commenting out bulk import to verify if large JSON/DB write causes crash checkConnection`);
+                        
+                        /*const controller = new AbortController();
+                        const timeoutId = setTimeout(() => controller.abort(), 3000);
                         // Use random query param to bypass cache
-                        /*await fetch(`${import.meta.env.BASE_URL}vite.svg?t=${Date.now()}`, { 
+                        await fetch(`${import.meta.env.BASE_URL}vite.svg?t=${Date.now()}`, { 
                             method: 'HEAD', 
                             signal: controller.signal,
                             cache: 'no-store'
