@@ -75,7 +75,7 @@ export const Footer: React.FC = () => {
         window.addEventListener('offline', handleStatus);
         
         // Polling fallback
-        const interval = setInterval(checkConnection, 10000); // Check every 10s
+        //const interval = setInterval(checkConnection, 10000); // Check every 10s
 
         refreshStats();
         // Check remote immediately
