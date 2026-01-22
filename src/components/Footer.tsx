@@ -33,7 +33,7 @@ export const Footer: React.FC = () => {
                         attempts++;
                         const controller = new AbortController();
                         const timeoutId = setTimeout(() => controller.abort(), 3000);
-                        
+                        console.log(`ISOLATION MODE: Commenting out bulk import to verify if large JSON/DB write causes crash checkConnection`);
                         // Use random query param to bypass cache
                         await fetch(`${import.meta.env.BASE_URL}vite.svg?t=${Date.now()}`, { 
                             method: 'HEAD', 
@@ -95,6 +95,7 @@ export const Footer: React.FC = () => {
     }, [isOnline, updateAvailable, hasAutoSynced]);
 
     const refreshStats = async () => {
+        console.log(`ISOLATION MODE: Commenting out bulk import to verify if large JSON/DB write causes crash refreshStats`);
         const stats = await getDatabaseStats();
         if (stats && stats.last_updated) {
             const date = new Date(Number(stats.last_updated));
@@ -109,6 +110,7 @@ export const Footer: React.FC = () => {
     };
 
     const checkRemote = async () => {
+        console.log(`ISOLATION MODE: Commenting out bulk import to verify if large JSON/DB write causes crash checkRemote`);
         if (!navigator.onLine) return;
         const remoteTs = await getRemoteVersion();
         const localVs = localStorage.getItem('db_version');
@@ -119,6 +121,7 @@ export const Footer: React.FC = () => {
     }
 
     const handleSync = async () => {
+        console.log(`ISOLATION MODE: Commenting out bulk import to verify if large JSON/DB write causes crash handleSync`);
         if (!isOnline) {
              // For auto-sync we might not want to show error if offline, but handleSync checks isOnline.
              // If manual click, we want error. If auto, maybe silent? 
