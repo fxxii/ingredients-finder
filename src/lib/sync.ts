@@ -8,10 +8,9 @@ export interface SyncStats {
 }
 
 export const getRemoteVersion = async (): Promise<number | null> => {
+  /* ISOLATION MODE: Commenting out bulk import to verify if large JSON/DB write causes crash 
   try {
-    // DB Sync: Disabled (Downloads JSON but skips writing to SQLite).
-    // const res = await fetch(`${DATA_PATH}/version.json?t=${Date.now()}`);
-    
+    const res = await fetch(`${DATA_PATH}/version.json?t=${Date.now()}`);
     if (!res.ok) return null;
     
     // Check if we actually got JSON (Vite/SPA might return index.html for 404s)
@@ -26,7 +25,8 @@ export const getRemoteVersion = async (): Promise<number | null> => {
   } catch (e) {
     console.error("Failed to check remote version", e);
     return null;
-  }
+  } */
+  return null;
 };
 
 export const syncDatabase = async (onProgress?: (msg: string) => void) => {
