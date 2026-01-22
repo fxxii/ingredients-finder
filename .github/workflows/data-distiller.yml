@@ -27,6 +27,9 @@ jobs:
           # effectively: wget -qO- url | gunzip | duckdb ...
           # But DuckDB handles http/gz natively.
           duckdb < utils/distill.sql
+          
+      - name: Enhance Data with Palm Tags
+        run: node scripts/tag_palm_oil.js products.json
 
       - name: Optimize & Compress
         run: |

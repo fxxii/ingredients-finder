@@ -60,7 +60,6 @@ async function initSchema(db: number, sqlite3: any) {
       ingredients TEXT,
       palm_oil_tags TEXT,
       palm_oil_may_be_tags TEXT,
-      image_url TEXT,
       nutriscore_grade TEXT,
       nova_group INTEGER,
       nutrient_levels TEXT,
@@ -192,7 +191,6 @@ export async function bulkImport(products: any[], onProgress?: (count: number) =
           ${toSqlVal(p.ingredients)}, 
           ${toSqlVal(p.palm_oil_tags)}, 
           ${toSqlVal(p.palm_oil_may_be_tags)}, 
-          ${toSqlVal(p.image_url)}, 
           ${toSqlVal(p.nutriscore_grade)}, 
           ${toSqlVal(p.nova_group)}, 
           ${toSqlVal(p.nutrient_levels)}, 
@@ -204,7 +202,7 @@ export async function bulkImport(products: any[], onProgress?: (count: number) =
       const sql = `
         INSERT OR REPLACE INTO products (
           code, name, ingredients, palm_oil_tags, palm_oil_may_be_tags, 
-          image_url, nutriscore_grade, nova_group, nutrient_levels, 
+          nutriscore_grade, nova_group, nutrient_levels, 
           additives_tags, last_updated
         ) VALUES ${values};
       `;

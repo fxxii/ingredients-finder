@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { getProductImage } from '../lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown, ChevronUp, AlertTriangle, Image as ImageIcon, X } from 'lucide-react';
 
@@ -133,6 +134,7 @@ export const ResultCard: React.FC<ResultCardProps> = ({ isLoading, isPaused, err
   };
 
   const highRisks = Object.entries(nutrientLevels).filter(([_, lvl]) => lvl === 'high');
+  const imageUrl = getProductImage(p.code);
 
   return (
      <motion.div 
@@ -144,9 +146,9 @@ export const ResultCard: React.FC<ResultCardProps> = ({ isLoading, isPaused, err
          {/* Header with Thumbnail */}
          <div className="flex gap-4 mb-3">
             <div className="w-20 h-20 shrink-0 bg-neutral-100 rounded-xl overflow-hidden border border-neutral-100 shadow-sm flex items-center justify-center">
-              {p.image_url ? (
+              {imageUrl ? (
                 <img 
-                  src={p.image_url} 
+                  src={imageUrl} 
                   alt={p.name} 
                   className="w-full h-full object-cover" 
                   onError={(e) => {
