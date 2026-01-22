@@ -9,7 +9,9 @@ export interface SyncStats {
 
 export const getRemoteVersion = async (): Promise<number | null> => {
   try {
-    const res = await fetch(`${DATA_PATH}/version.json?t=${Date.now()}`);
+    // DB Sync: Disabled (Downloads JSON but skips writing to SQLite).
+    // const res = await fetch(`${DATA_PATH}/version.json?t=${Date.now()}`);
+    
     if (!res.ok) return null;
     
     // Check if we actually got JSON (Vite/SPA might return index.html for 404s)
