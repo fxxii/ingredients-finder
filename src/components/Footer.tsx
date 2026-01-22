@@ -34,7 +34,7 @@ export const Footer: React.FC = () => {
                         attempts++;
                         console.log(`ISOLATION MODE: Commenting out bulk import to verify if large JSON/DB write causes crash checkConnection`);
                         
-                        /*const controller = new AbortController();
+                        const controller = new AbortController();
                         const timeoutId = setTimeout(() => controller.abort(), 3000);
                         // Use random query param to bypass cache
                         await fetch(`${import.meta.env.BASE_URL}vite.svg?t=${Date.now()}`, { 
@@ -44,7 +44,7 @@ export const Footer: React.FC = () => {
                         });
                         
                         clearTimeout(timeoutId);
-                        setOnlineStatus(true);*/
+                        setOnlineStatus(true);
                         return; // Success, exit function
                     } catch (e: any) {
                         console.log(`ISOLATION MODE: Commenting out bulk import to verify if large JSON/DB write causes crash checkConnection Error`);
@@ -76,7 +76,7 @@ export const Footer: React.FC = () => {
         window.addEventListener('offline', handleStatus);
         
         // Polling fallback
-        //const interval = setInterval(checkConnection, 10000); // Check every 10s
+        const interval = setInterval(checkConnection, 10000); // Check every 10s
 
         refreshStats();
         // Check remote immediately
@@ -86,7 +86,7 @@ export const Footer: React.FC = () => {
         return () => {
             window.removeEventListener('online', handleStatus);
             window.removeEventListener('offline', handleStatus);
-            //clearInterval(interval);
+            clearInterval(interval);
         };
     }, []);
 
