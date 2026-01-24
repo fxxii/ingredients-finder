@@ -1,4 +1,4 @@
-import { bulkImport } from './db';
+import { importFromStream } from './db';
 
 const DATA_PATH = `${import.meta.env.BASE_URL}data`;
 
@@ -40,31 +40,16 @@ export const syncDatabase = async (onProgress?: (msg: string) => void) => {
       return false; 
     }
 
-    if (onProgress) onProgress("Downloading database (might take a while)...");
+    if (onProgress) onProgress("Downloading database...");
     
-    // Fetch JSON.gz
-    const response = await fetch(`${DATA_PATH}/products.json.gz`);
-    if (!response.ok) throw new Error("Download failed");
-    if (!response.body) throw new Error("Response body is empty");
+    const url = `${DATA_PATH}/products.jsonl.gz`; // Use Gzipped NDJSON
 
-    // Decompress
-    const ds = new DecompressionStream("gzip");
-    const stream = response.body.pipeThrough(ds);
-    const newResponse = new Response(stream);
-    
-    // Parse JSON
-    if (onProgress) onProgress("Processing data...");
-    const products = await newResponse.json();
-
-    if (onProgress) onProgress(`Importing ${products.length} items...`);
-
-    // Bulk Import
-    await bulkImport(products, (count) => {
-       const pct = Math.round((count / products.length) * 100);
-       if (onProgress) onProgress(`Importing... ${pct}%`);
+    await importFromStream(url, (count) => {
+       // We can't know percentage easily with streaming GZIP unless we know Total Rows
+       // But we know it's around 70k, so we can estimate or just show count.
+       // Let's show count for accuracy.
+       if (onProgress) onProgress(`Imported ${count} items...`);
     });
-    
-    console.log("[Sync] ISOLATED: Skipping bulkImport to DB.");
     
     // Update local version
     localStorage.setItem('db_version', String(remoteTs));

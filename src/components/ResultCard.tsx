@@ -12,6 +12,15 @@ interface ResultCardProps {
   code?: string | null;
 }
 
+// Helper: Handles both JSON strings and native Objects
+const safeParse = (val: any, defaultVal: any) => {
+  if (!val) return defaultVal;
+  if (typeof val === 'string') {
+    try { return JSON.parse(val); } catch (e) { return defaultVal; }
+  }
+  return val; // It's already an object/array
+};
+
 export const ResultCard: React.FC<ResultCardProps> = ({ isLoading, isPaused, error, data, code, onReset }) => {
   React.useEffect(() => {
     console.log('[ResultCard] Render:', { isLoading, isPaused, error, data, code });
@@ -92,8 +101,8 @@ export const ResultCard: React.FC<ResultCardProps> = ({ isLoading, isPaused, err
 
   // Parse Data
   const p = data.data;
-  const palmTags = JSON.parse(p.palm_oil_tags || '[]');
-  const palmMayBeTags = JSON.parse(p.palm_oil_may_be_tags || '[]');
+  const palmTags = safeParse(p.palm_oil_tags, []);
+  const palmMayBeTags = safeParse(p.palm_oil_may_be_tags, []);
   
   const hasPalm = palmTags.length > 0;
   const mayHavePalm = palmMayBeTags.length > 0;
@@ -118,8 +127,8 @@ export const ResultCard: React.FC<ResultCardProps> = ({ isLoading, isPaused, err
     statusText = 'May Contain Palm Oil';
   }
 
-  const nutrientLevels = JSON.parse(p.nutrient_levels || '{}');
-  const additives = JSON.parse(p.additives_tags || '[]');
+  const nutrientLevels = safeParse(p.nutrient_levels, {});
+  const additives = safeParse(p.additives_tags, []);
 
   // Get Score Colors/Labels
   const getNutriColor = (grade: string) => {

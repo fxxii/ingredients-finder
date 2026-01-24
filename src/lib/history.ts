@@ -41,8 +41,8 @@ export async function addScanToHistory(code: string, data?: any) {
   let status: 'green' | 'red' | 'yellow' | 'unknown' = 'unknown';
 
   if (data) {
-    const palmTags = JSON.parse(data.palm_oil_tags || '[]');
-    const palmMayBeTags = JSON.parse(data.palm_oil_may_be_tags || '[]');
+    const palmTags = Array.isArray(data.palm_oil_tags) ? data.palm_oil_tags : JSON.parse(data.palm_oil_tags || '[]');
+    const palmMayBeTags = Array.isArray(data.palm_oil_may_be_tags) ? data.palm_oil_may_be_tags : JSON.parse(data.palm_oil_may_be_tags || '[]');
     const hasPalm = palmTags.length > 0;
     const mayHavePalm = palmMayBeTags.length > 0;
 

@@ -48,13 +48,13 @@ export function useProduct(code: string | null) {
              code,
              name: remoteData.product.product_name,
              ingredients: remoteData.product.ingredients_text,
-             palm_oil_tags: JSON.stringify(remoteData.product.ingredients_from_palm_oil_tags || []),
-             palm_oil_may_be_tags: JSON.stringify(remoteData.product.ingredients_that_may_be_from_palm_oil_tags || []),
+             palm_oil_tags: remoteData.product.ingredients_from_palm_oil_tags || [],
+             palm_oil_may_be_tags: remoteData.product.ingredients_that_may_be_from_palm_oil_tags || [],
              image_url: remoteData.product.image_front_small_url,
              nutriscore_grade: remoteData.product.nutriscore_grade,
              nova_group: remoteData.product.nova_group,
-             nutrient_levels: JSON.stringify(remoteData.product.nutrient_levels || {}),
-             additives_tags: JSON.stringify(remoteData.product.additives_tags || [])
+             nutrient_levels: remoteData.product.nutrient_levels || {},
+             additives_tags: remoteData.product.additives_tags || []
           };
           await addScanToHistory(code, mapped);
           return { source: 'api', data: mapped };
