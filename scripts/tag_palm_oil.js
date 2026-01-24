@@ -1,4 +1,4 @@
-const fs = require('fs');
+import fs from 'fs';
 
 const FILE_PATH = process.argv[2] || './public/data/products.json';
 const IGNORE_PHRASES = [
