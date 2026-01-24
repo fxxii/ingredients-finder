@@ -48,14 +48,12 @@ export const Footer: React.FC = () => {
                         return; // Success, exit function
                     } catch (e: any) {
                         console.log(`ISOLATION MODE: Commenting out bulk import to verify if large JSON/DB write causes crash checkConnection Error`);
-                        /*
                         // Only retry on network errors, not aborts
                         if (attempts < 2 && e.name !== 'AbortError') {
                             console.log(`[Connection] Ping attempt ${attempts} failed, retrying...`);
                             await new Promise(r => setTimeout(r, 1000));
                             continue;
                         }
-                            */
                         throw e;
                     }
                 }
@@ -100,7 +98,6 @@ export const Footer: React.FC = () => {
     }, [isOnline, updateAvailable, hasAutoSynced]);
 
     const refreshStats = async () => {
-        console.log(`ISOLATION MODE: Commenting out bulk import to verify if large JSON/DB write causes crash refreshStats`);
         const stats = await getDatabaseStats();
         if (stats && stats.last_updated) {
             const date = new Date(Number(stats.last_updated));
@@ -114,9 +111,7 @@ export const Footer: React.FC = () => {
         }
     };
 
-    /* ISOLATION MODE: Commenting out bulk import to verify if large JSON/DB write causes crash */
     const checkRemote = async () => {
-        console.log(`ISOLATION MODE: Commenting out bulk import to verify if large JSON/DB write causes crash checkRemote`);
         if (!navigator.onLine) return;
         const remoteTs = await getRemoteVersion();
         const localVs = localStorage.getItem('db_version');

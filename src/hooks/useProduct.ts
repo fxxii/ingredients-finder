@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { searchProductLocal } from '../lib/db';
-//import { fetchProductFromOFF } from '../lib/api';
+import { fetchProductFromOFF } from '../lib/api';
 import { addScanToHistory } from '../lib/history';
 import { useStore } from '../lib/store';
 
@@ -33,14 +33,7 @@ export function useProduct(code: string | null) {
         console.warn("[useProduct] Local DB skipped:", err);
       }
       
-      console.log(`[useProduct] ISOLATED MODE: Detected ${code}. Local DB missed. Skipping API.`);
-      // Return a fake "Not Found" to keep UI stable without alerting network errors
-      // or return null to simulate "loading" depending on what we want.
-      // Let's return 'none' so we see the Result Card appear (isolating UI render too).
-      return { source: 'none', data: null };
-
-      /*
-      // 3. API Fetch
+      // 2. API Fetch
       // If we are offline (according to our robust Global Status), throw offline error.
       // This respects the ping check from the Footer.
       if (!navigator.onLine || !isOnline) {
@@ -80,11 +73,10 @@ export function useProduct(code: string | null) {
         // But fetchProductFromOFF throws on non-404 network errors.
         throw apiErr; 
       }
-      */
 
       // 4. Not Found (Online but API said 404)
-//      await addScanToHistory(code, null); // Log failed scan
-//      return { source: 'none', data: null };
+      await addScanToHistory(code, null); // Log failed scan
+      return { source: 'none', data: null };
     },
     enabled: !!code,
     retry: (failureCount, error) => {
