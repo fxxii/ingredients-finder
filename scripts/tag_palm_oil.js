@@ -88,16 +88,16 @@ function tagPalmOil() {
         });
 
         const optimizedProducts = products.map(p => ({
-            c: p.code,
-            n: p.name,
-            i: p.ingredients,
-            pt: p.palm_oil_tags,
-            pmt: p.palm_oil_may_be_tags,
-            ns: p.nutriscore_grade,
-            ng: p.nova_group,
-            nl: p.nutrient_levels,
-            at: p.additives_tags,
-            l: p.last_updated
+            code: p.c || p.code,
+            name: p.n || p.name || p.product_name,
+            ingredients: p.i || p.ingredients || p.ingredients_text,
+            palm_oil_tags: p.pt || p.palm_oil_tags,
+            palm_oil_may_be_tags: p.pmt || p.palm_oil_may_be_tags,
+            nutriscore_grade: p.ns || p.nutriscore_grade,
+            nova_group: p.ng || p.nova_group,
+            nutrient_levels: p.nl || p.nutrient_levels,
+            additives_tags: p.at || p.additives_tags,
+            last_updated: p.l || p.last_updated
         }));
 
         console.log(`Updated ${updatedCount} products with palm oil tags.`);

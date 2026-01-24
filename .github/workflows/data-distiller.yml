@@ -31,10 +31,16 @@ jobs:
       - name: Enhance Data with Palm Tags
         run: node scripts/tag_palm_oil.js products.json
 
-      - name: Optimize & Compress
+      - name: Prepare Data for Conversion
+        run: mv products.json public/data/products.json
+
+      - name: Convert to NDJSON & Compress
+        run: node scripts/convert_data.js
+
+      - name: Finalize & Version
         run: |
-          # Compress JSON output
-          gzip -9 -c products.json > public/data/products.json.gz
+          # Clean up source JSON to save space (NDJSON.gz is independent)
+          rm public/data/products.json
           
           # Generate Version File (~50 Bytes)
           echo "{\"last_updated\": $(date +%s%3N)}" > public/data/version.json
