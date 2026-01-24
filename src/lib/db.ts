@@ -186,16 +186,16 @@ export async function bulkImport(products: any[], onProgress?: (count: number) =
 
       const values = batch.map((p: any) => {
         return `(
-          ${toSqlVal(p.code)}, 
-          ${toSqlVal(p.name)}, 
-          ${toSqlVal(p.ingredients)}, 
-          ${toSqlVal(p.palm_oil_tags)}, 
-          ${toSqlVal(p.palm_oil_may_be_tags)}, 
-          ${toSqlVal(p.nutriscore_grade)}, 
-          ${toSqlVal(p.nova_group)}, 
-          ${toSqlVal(p.nutrient_levels)}, 
-          ${toSqlVal(p.additives_tags)}, 
-          ${toSqlVal(p.last_updated)}
+          ${toSqlVal(p.c)}, 
+          ${toSqlVal(p.n)}, 
+          ${toSqlVal(p.i)}, 
+          ${toSqlVal(p.pt)}, 
+          ${toSqlVal(p.pmt)}, 
+          ${toSqlVal(p.ns)}, 
+          ${toSqlVal(p.ng)}, 
+          ${toSqlVal(p.nl)}, 
+          ${toSqlVal(p.at)}, 
+          ${toSqlVal(p.l)}
         )`;
       }).join(",");
 

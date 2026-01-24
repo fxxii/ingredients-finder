@@ -87,9 +87,22 @@ function tagPalmOil() {
             }
         });
 
+        const optimizedProducts = products.map(p => ({
+            c: p.code,
+            n: p.name,
+            i: p.ingredients,
+            pt: p.palm_oil_tags,
+            pmt: p.palm_oil_may_be_tags,
+            ns: p.nutriscore_grade,
+            ng: p.nova_group,
+            nl: p.nutrient_levels,
+            at: p.additives_tags,
+            l: p.last_updated
+        }));
+
         console.log(`Updated ${updatedCount} products with palm oil tags.`);
         
-        fs.writeFileSync(FILE_PATH, JSON.stringify(products, null, 2));
+        fs.writeFileSync(FILE_PATH, JSON.stringify(optimizedProducts, null, 0)); // Remove pretty print null, 0 for minification
         console.log(`Saved updated data to ${FILE_PATH}`);
 
     } catch (err) {
