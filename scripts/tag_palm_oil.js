@@ -32,7 +32,19 @@ function tagPalmOil() {
 
     try {
         const rawData = fs.readFileSync(FILE_PATH, 'utf8');
-        const products = JSON.parse(rawData);
+        let products;
+        try {
+            products = JSON.parse(rawData);
+        } catch (e) {
+            // Try parsing as NDJSON if standard JSON parse fails
+            try {
+                products = rawData.trim().split('\n').filter(line => line.trim()).map(line => JSON.parse(line));
+                console.log('Detected NDJSON input format, parsing line by line...');
+            } catch (e2) {
+                // If both fail, throw the original error or a combined one
+                throw new Error(`Failed to parse input file: ${e.message}`); 
+            }
+        }
         let updatedCount = 0;
 
         products.forEach(p => {
@@ -87,8 +99,9 @@ function tagPalmOil() {
         });
 
         const stream = fs.createWriteStream(FILE_PATH);
+        stream.write('[\n');
         
-        products.forEach(p => {
+        products.forEach((p, index) => {
              const optimized = {
                 c: p.c || p.code,
                 n: p.n || p.name || p.product_name,
@@ -101,11 +114,13 @@ function tagPalmOil() {
                 at: p.at || p.additives_tags,
                 l: p.l || p.last_updated
             };
-            stream.write(JSON.stringify(optimized) + '\n');
+            const separator = index < products.length - 1 ? ',\n' : '\n';
+            stream.write(JSON.stringify(optimized) + separator);
         });
         
+        stream.write(']');
         stream.end();
-        console.log(`Saved updated data to ${FILE_PATH} (NDJSON format)`);
+        console.log(`Saved updated data to ${FILE_PATH} (JSON format)`);
 
     } catch (err) {
         console.error("Error processing file:", err);
