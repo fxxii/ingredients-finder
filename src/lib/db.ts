@@ -146,8 +146,24 @@ export async function importFromStream(
         if (!trimmed) continue;
 
         try {
-          const product = JSON.parse(trimmed);
+          let product = JSON.parse(trimmed);
           
+          // Map short keys to long keys (Inflation)
+          if (product.c) {
+              product = {
+                  code: product.c,
+                  name: product.n,
+                  ingredients: product.i,
+                  palm_oil_tags: product.pt,
+                  palm_oil_may_be_tags: product.pmt,
+                  nutriscore_grade: product.ns,
+                  nova_group: product.ng,
+                  nutrient_levels: product.nl,
+                  additives_tags: product.at,
+                  last_updated: product.l
+              };
+          }
+
           // Optimization: Parse nested JSON fields here to save runtime CPU later
           const jsonFields = ['nutrient_levels', 'palm_oil_tags', 'palm_oil_may_be_tags', 'additives_tags'];
           

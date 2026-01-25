@@ -13,9 +13,8 @@ const IGNORE_PHRASES = [
 // Variants list verified by user
 const PALM_VARIANTS = [
     'palm oil', 'palm fat', 'palm kernel', 'palmitate', 'elaeis guineensis', 'sustainable palm', 'huile de palme', 
-    'vegetable oil', 'vegetable fat', 'vegetable fats', 'vegetable oils',
     'graisse de palme', 'palmfett', 'palmolie', 'ölpalme', 'palmkerne', 'palmkern', 'palm- und', 'palm und', 
-    'huile de palmiste', 'huile palme', 'palm õil', 'grăsime palmier', 'palmöl', 'palmekjerne', 'vegetabte',
+    'huile de palmiste', 'huile palme', 'palm õil', 'grăsime palmier', 'palmöl', 'palmekjerne',
     'fat palm', 'fats palm', 'oil palm', 
     'palm oll', 'palm ol', 'palm oi', 'palm 0i', 'palm lemal oll', 'vegetable palm', 'olio di palma',
     'palm and rapeseed', 'palm & rapeseed', 'palm and/or', 'palm and or', 'palm & or'
@@ -87,23 +86,26 @@ function tagPalmOil() {
             }
         });
 
-        const optimizedProducts = products.map(p => ({
-            code: p.c || p.code,
-            name: p.n || p.name || p.product_name,
-            ingredients: p.i || p.ingredients || p.ingredients_text,
-            palm_oil_tags: p.pt || p.palm_oil_tags,
-            palm_oil_may_be_tags: p.pmt || p.palm_oil_may_be_tags,
-            nutriscore_grade: p.ns || p.nutriscore_grade,
-            nova_group: p.ng || p.nova_group,
-            nutrient_levels: p.nl || p.nutrient_levels,
-            additives_tags: p.at || p.additives_tags,
-            last_updated: p.l || p.last_updated
-        }));
-
-        console.log(`Updated ${updatedCount} products with palm oil tags.`);
+        const stream = fs.createWriteStream(FILE_PATH);
         
-        fs.writeFileSync(FILE_PATH, JSON.stringify(optimizedProducts, null, 0)); // Remove pretty print null, 0 for minification
-        console.log(`Saved updated data to ${FILE_PATH}`);
+        products.forEach(p => {
+             const optimized = {
+                c: p.c || p.code,
+                n: p.n || p.name || p.product_name,
+                i: p.i || p.ingredients || p.ingredients_text,
+                pt: p.pt || p.palm_oil_tags,
+                pmt: p.pmt || p.palm_oil_may_be_tags,
+                ns: p.ns || p.nutriscore_grade,
+                ng: p.ng || p.nova_group,
+                nl: p.nl || p.nutrient_levels,
+                at: p.at || p.additives_tags,
+                l: p.l || p.last_updated
+            };
+            stream.write(JSON.stringify(optimized) + '\n');
+        });
+        
+        stream.end();
+        console.log(`Saved updated data to ${FILE_PATH} (NDJSON format)`);
 
     } catch (err) {
         console.error("Error processing file:", err);

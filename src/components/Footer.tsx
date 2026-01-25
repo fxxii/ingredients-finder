@@ -32,7 +32,6 @@ export const Footer: React.FC = () => {
                 while (attempts < 2) {
                     try {
                         attempts++;
-                        console.log(`ISOLATION MODE: Commenting out bulk import to verify if large JSON/DB write causes crash checkConnection`);
                         
                         const controller = new AbortController();
                         const timeoutId = setTimeout(() => controller.abort(), 3000);
@@ -47,7 +46,6 @@ export const Footer: React.FC = () => {
                         setOnlineStatus(true);
                         return; // Success, exit function
                     } catch (e: any) {
-                        console.log(`ISOLATION MODE: Commenting out bulk import to verify if large JSON/DB write causes crash checkConnection Error`);
                         // Only retry on network errors, not aborts
                         if (attempts < 2 && e.name !== 'AbortError') {
                             console.log(`[Connection] Ping attempt ${attempts} failed, retrying...`);
@@ -123,7 +121,6 @@ export const Footer: React.FC = () => {
     
 
     const handleSync = async () => {
-        console.log(`ISOLATION MODE: Commenting out bulk import to verify if large JSON/DB write causes crash handleSync`);
         if (!isOnline) {
              // For auto-sync we might not want to show error if offline, but handleSync checks isOnline.
              // If manual click, we want error. If auto, maybe silent? 
